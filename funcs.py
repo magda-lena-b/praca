@@ -28,6 +28,13 @@ def clear_text(t):
     """Czysci znaki specjalne
     :type t: basestring
     """
-    t = re.sub('[\n\r\t]', ' ', t)
-    t = re.sub('\s+', ' ', t)
+    try:
+        t = re.sub('[\n\r\t]', ' ', t)
+    except:
+        return None
+
+    try:
+        t = re.sub('\s+', ' ', t)
+    except:
+        return t
     return t
