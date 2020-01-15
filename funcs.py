@@ -22,4 +22,12 @@ def rem_head(t):
         return t
     return t
 
-#print(name_finder('ruk nr 1864). Poseł Wiesław ss kkkk Piątkowski Sza'))        
+#print(name_finder('ruk nr 1864). Poseł Wiesław ss kkkk Piątkowski Sza'))
+
+def clear_text(t):
+    """Czysci znaki specjalne
+    :type t: basestring
+    """
+    t = re.sub('[\n\r\t]', ' ', t)
+    t = re.sub('\s+', ' ', t)
+    return t
