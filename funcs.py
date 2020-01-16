@@ -1,4 +1,5 @@
 import re
+import pandas as pd
 
 def name_finder(t):
     ''' Wyszukuje i zwraca imie i nazwisko przemawiajacego posla'''
@@ -38,3 +39,14 @@ def clear_text(t):
     except:
         return t
     return t
+
+def rem_title(title, raw_text):
+    """Usuwa fragment, ktory jest tytulem przemowienia
+    :type title: basestring
+    :type raw_text: basestring"""
+    if not pd.isnull(title) and not raw_text is None:
+        print(title)
+        res = re.sub(title, '', raw_text)
+        return res
+    else:
+        return raw_text
