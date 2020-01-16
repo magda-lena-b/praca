@@ -42,11 +42,18 @@ def clear_text(t):
 
 def rem_title(title, raw_text):
     """Usuwa fragment, ktory jest tytulem przemowienia
-    :type title: basestring
-    :type raw_text: basestring"""
+    :type title: string
+    :type raw_text: string"""
     if not pd.isnull(title) and not raw_text is None:
         print(title)
         res = re.sub(title, '', raw_text)
         return res
     else:
         return raw_text
+
+def rem_nasty(r):
+    """Jednorazowa korekta"""
+    if not r is None and not pd.isnull(r):
+        return re.sub('\[COM(2005)0119 - C6-0099/2005 - 2005/0043(COD)\]', ' ', r)
+    else:
+        return r
