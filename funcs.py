@@ -45,8 +45,11 @@ def rem_title(title, raw_text):
     :type title: string
     :type raw_text: string"""
     if not pd.isnull(title) and not pd.isnull(raw_text) and not raw_text is None:
-        assert re.sub(title, '', raw_text), raw_text
-        return re.sub(title, '', raw_text)
+        try:
+            re.sub(title, '', raw_text)
+            return re.sub(title, '', raw_text)
+        except:
+            return raw_text
     else:
         return raw_text
 
