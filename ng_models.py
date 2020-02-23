@@ -1,6 +1,7 @@
 import re
 import pandas as pd
 import numpy as np
+import random
 
 class ng_models(object):
 
@@ -19,16 +20,30 @@ class ng_models(object):
         self.model_dict = self.create_model(self)
         self.first_words = self.get_first_words(self)
 
+        self.V = len(set(self.corpus.split()))-1
+
 
     @staticmethod
     def process_text(self, t):
-        t = re.sub(r'\s+',' ',t)
-        t = re.sub(r'\ r.',' r',t)
-        t = re.sub(r'[!?.] ',' </s> <s> ',t.lower())
+        print('Processing data....')
+        t = '<s> ' + t
+        t = re.sub(r'\s+',' ',t.lower())
+        t = re.sub(r'\ r\.',' r',t)
+        t = re.sub(',','',t)
+        
+        replacement = ' </s> <s> '
+        for _ in range(self.n-1):
+            replacement += '<s> '
+            t = '<s> ' + t
+        t = re.sub(r'[!?.] ',replacement , t)
+
+        t += ' </s>'
+
         return t
         
     @staticmethod
     def create_model(self) -> dict:
+        print('Building a model...')
         words, words_model = list(), dict()
 
         words = self.corpus.split()
@@ -43,6 +58,84 @@ class ng_models(object):
     @staticmethod
     def get_first_words(self):
         assert hasattr(self, 'model_dict')
-
-        first_words = [k.split()[1] for k in list(self.model_dict.keys()) if k.split()[0]=='<s>']
+        sent_start = '<s>'
+        for _ in range(self.n-1):
+            sent_start = sent_start + ' <s>'
+        print('Sent_start: ', sent_start)
+        #first_words = [k.split()[1] for k in list(self.model_dict.keys()) if k.split()[0]=='<s>' and k.split()[1]!='<s>']
+        first_words = re.findall(rf'{sent_start} ([^ ]+)', self.corpus)
         return first_words
+
+    def generate(self, steps: int = 60, max_sent: int = 20):
+        """
+        
+        """
+        
+        speech = list()
+        
+        while len(speech)<steps:
+            sentence=''
+            
+            w1 = self.first_words[random.randrange(len(self.first_words))]
+
+            try:
+                first_keys = [k for k in list(self.model_dict.keys()) if k.split()[0]==w1]
+            except:
+                first_keys = [self.model_dict[w1]]
+            
+            sent_start  = first_keys[random.randrange(len(first_keys))]
+
+            words = sent_start
+            sentence = sent_start.capitalize()
+            sent_len=2
+            ifend=0
+            
+            while sent_len<max_sent and ifend==0:
+                print(words.split()[-self.n:], self.model_dict[words])
+                try:
+                    possibilities = self.model_dict[words]
+                    next_item = possibilities[random.randrange(len(possibilities))]
+                except:
+                    next_item = '</s>'
+                
+                if next_item == '</s>':
+                    ifend = 1
+                    speech.append(sentence+'.')
+                else:
+                    sentence += ' ' + next_item
+                    words = ' '.join(sentence.split()[-self.n:])
+                    sent_len+=1
+                
+                if ifend==0 and sent_len>=max_sent:
+                    speech.append(sentence+'.')
+                #print('Ifend = {}, sentence = {}, words = {}, next = {}'.format(ifend, sentence, words, next_item))
+            
+        return ' '.join(speech)
+
+    def perplexity(self, sentence):
+        """
+        Calculates the perplexity of the sentence. Low perplexity means that model is rather surprised with the sentence.
+
+        sentence: str
+        """
+        N = len(sentence.split())
+        sentence = self.process_text(self, sentence)
+ 
+        sentence = sentence.split()
+
+        p=1
+        for i in range(N+1):
+            print(sentence[i:i+self.n])
+            try:
+                dic_frag = self.model_dict[' '.join(sentence[i:i+self.n])]
+                print(self.model_dict[' '.join(sentence[i:i+self.n])])
+                print(sentence[i+self.n])
+                denom = len(dic_frag)+self.V
+                enum= len([v for v in dic_frag if v == sentence[i+self.n]])+1
+                print(enum/denom)
+                p = p*enum/denom
+            except:
+                p=p*(1/(1+self.V))
+                print((1/(1+self.V)))
+
+        return p**(-1/N)
