@@ -170,7 +170,7 @@ class ng_models(object):
                 sentence += ' ' + Counter(self.model_dict[' '.join(s_part)]).most_common(1)[0][0]
 
         sentence = re.sub('<s>','', sentence)
-        sentence = re.sub('\s+',' ', sentence)
+        sentence = re.sub(r'\s+',' ', sentence)
         sentence = sentence.strip().capitalize() + '.'
 
         return sentence
