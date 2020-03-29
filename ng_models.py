@@ -2,6 +2,7 @@ import re
 import pandas as pd
 import numpy as np
 import random
+from collections import Counter
 
 class ng_models(object):
 
@@ -14,6 +15,8 @@ class ng_models(object):
         assert len(corpus)>0
 
         self.n = min(n,5)
+        self.get_specials(self)
+
         self.corpus = self.process_text(self, corpus)
      
 
@@ -22,28 +25,36 @@ class ng_models(object):
 
         self.V = len(set(self.corpus.split()))-1
 
+    @staticmethod
+    def get_specials(self):
+        '''
+        Creates sets od special symbols (</s> <s>) that will be used for marking beginings and endings of the sentences.
+        Their length depends on 'n' parameter.
+        '''    
+        self.replacement = ' </s> <s> '
+        self.sent_start = '<s> '
+
+        for _ in range(self.n-1):
+            self.replacement += '<s> '
+            self.sent_start += '<s> '
 
     @staticmethod
     def process_text(self, t):
-        print('Processing data....')
-        t = '<s> ' + t
+        '''
+        Quick preprocessing of the text. Removes some special symbols and adds special strings calculated by 'get_specials' method.
+        '''
+        t = self.sent_start + t
         t = re.sub(r'\s+',' ',t.lower())
         t = re.sub(r'\ r\.',' r',t)
         t = re.sub(',','',t)
         
-        replacement = ' </s> <s> '
-        for _ in range(self.n-1):
-            replacement += '<s> '
-            t = '<s> ' + t
-        t = re.sub(r'[!?.] ',replacement , t)
-
+        t = re.sub(r'[!?.] ',self.replacement , t)
         t += ' </s>'
 
         return t
         
     @staticmethod
     def create_model(self) -> dict:
-        print('Building a model...')
         words, words_model = list(), dict()
 
         words = self.corpus.split()
@@ -57,18 +68,20 @@ class ng_models(object):
 
     @staticmethod
     def get_first_words(self):
+        '''
+        Crates the list of words that occur in the first position in at leas one sentence in the corpus.
+        '''
         assert hasattr(self, 'model_dict')
-        sent_start = '<s>'
-        for _ in range(self.n-1):
-            sent_start = sent_start + ' <s>'
-        print('Sent_start: ', sent_start)
-        #first_words = [k.split()[1] for k in list(self.model_dict.keys()) if k.split()[0]=='<s>' and k.split()[1]!='<s>']
-        first_words = re.findall(rf'{sent_start} ([^ ]+)', self.corpus)
+       
+        first_words = re.findall(rf'{self.sent_start}([^ ]+)', self.corpus)
         return first_words
 
     def generate(self, steps: int = 60, max_sent: int = 20):
         """
-        
+        Generates text of length 'steps' sentences with sentences of maximum length 'max_sent'.
+
+        steps: int
+        max_sent: int
         """
         
         speech = list()
@@ -91,7 +104,6 @@ class ng_models(object):
             ifend=0
             
             while sent_len<max_sent and ifend==0:
-                print(words.split()[-self.n:], self.model_dict[words])
                 try:
                     possibilities = self.model_dict[words]
                     next_item = possibilities[random.randrange(len(possibilities))]
@@ -108,13 +120,13 @@ class ng_models(object):
                 
                 if ifend==0 and sent_len>=max_sent:
                     speech.append(sentence+'.')
-                #print('Ifend = {}, sentence = {}, words = {}, next = {}'.format(ifend, sentence, words, next_item))
-            
+                
         return ' '.join(speech)
+
 
     def perplexity(self, sentence):
         """
-        Calculates the perplexity of the sentence. Low perplexity means that model is rather surprised with the sentence.
+        Calculates the perplexity of the sentence. High perplexity means that model is rather surprised with the sentence.
 
         sentence: str
         """
@@ -125,17 +137,42 @@ class ng_models(object):
 
         p=1
         for i in range(N+1):
-            print(sentence[i:i+self.n])
             try:
                 dic_frag = self.model_dict[' '.join(sentence[i:i+self.n])]
-                print(self.model_dict[' '.join(sentence[i:i+self.n])])
-                print(sentence[i+self.n])
                 denom = len(dic_frag)+self.V
                 enum= len([v for v in dic_frag if v == sentence[i+self.n]])+1
-                print(enum/denom)
                 p = p*enum/denom
             except:
                 p=p*(1/(1+self.V))
-                print((1/(1+self.V)))
-
         return p**(-1/N)
+
+
+    def mprob_sent(self, start_word: str, max_len: int =30):
+        """
+        Generates most probable sentence for given model that starts with 'start_word'. 
+        If 'start_word' is empty searches for most common word among the 'first_words' of the model.
+
+        start_word: str
+        """
+        try:
+            sentence = self.sent_start + start_word.lower()
+            sentence += ' '+Counter(self.model_dict[sentence.split()[-self.n:][0]]).most_common(1)[0][0]
+        except:
+            print('Zaczynam od najpopularniejszego początku zdania w modelu...')
+            sentence = self.sent_start + ' '+ Counter(self.first_words).most_common(1)[0][0]
+
+        for _ in range(max_len):
+            s_part = sentence.split()[-self.n:]
+            print(s_part)
+            if Counter(self.model_dict[' '.join(s_part)]).most_common(1)[0][0]=='</s>':
+                break
+            else:
+                sentence += ' ' + Counter(self.model_dict[' '.join(s_part)]).most_common(1)[0][0]
+
+        sentence = re.sub('<s>','', sentence)
+        sentence = re.sub('\s+',' ', sentence)
+        sentence = sentence.strip().capitalize() + '.'
+
+        return sentence
+
+        
