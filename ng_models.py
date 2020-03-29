@@ -1,3 +1,4 @@
+
 import re
 import pandas as pd
 import numpy as np
@@ -18,7 +19,7 @@ class ng_models(object):
         self.get_specials(self)
 
         self.corpus = self.process_text(self, corpus)
-     
+
 
         self.model_dict = self.create_model(self)
         self.first_words = self.get_first_words(self)
@@ -153,6 +154,7 @@ class ng_models(object):
         If 'start_word' is empty searches for most common word among the 'first_words' of the model.
 
         start_word: str
+        max_len: int
         """
         try:
             sentence = self.sent_start + start_word.lower()
@@ -174,5 +176,3 @@ class ng_models(object):
         sentence = sentence.strip().capitalize() + '.'
 
         return sentence
-
-        
