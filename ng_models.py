@@ -1,3 +1,4 @@
+
 import re
 import pandas as pd
 import numpy as np
@@ -175,5 +176,3 @@ class ng_models(object):
         sentence = sentence.strip().capitalize() + '.'
 
         return sentence
-
-        
