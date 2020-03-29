@@ -1,4 +1,3 @@
-
 import re
 import pandas as pd
 import numpy as np
@@ -148,7 +147,7 @@ class ng_models(object):
         return p**(-1/N)
 
 
-    def mprob_sent(self, start_word: str, max_len: int =30):
+    def mprob_sent(self, start_word: str ='', max_len: int =30):
         """
         Generates most probable sentence for given model that starts with 'start_word'. 
         If 'start_word' is empty searches for most common word among the 'first_words' of the model.
@@ -156,20 +155,38 @@ class ng_models(object):
         start_word: str
         max_len: int
         """
+        stopper = 0
         try:
             sentence = self.sent_start + start_word.lower()
-            sentence += ' '+Counter(self.model_dict[sentence.split()[-self.n:][0]]).most_common(1)[0][0]
+            new_word = Counter(self.model_dict[sentence.split()[-self.n:][0]]).most_common(1)[0][0]
+            if new_word=='</s>':
+                sentence = re.sub('<s>','', sentence)
+                sentence = re.sub(r'\s+',' ', sentence)
+                return sentence.strip().capitalize() + '.'
+            else:
+                sentence += ' '+new_word
         except:
             print('Zaczynam od najpopularniejszego początku zdania w modelu...')
             sentence = self.sent_start + ' '+ Counter(self.first_words).most_common(1)[0][0]
 
         for _ in range(max_len):
             s_part = sentence.split()[-self.n:]
-            print(s_part)
             if Counter(self.model_dict[' '.join(s_part)]).most_common(1)[0][0]=='</s>':
                 break
             else:
-                sentence += ' ' + Counter(self.model_dict[' '.join(s_part)]).most_common(1)[0][0]
+                new_word = Counter(self.model_dict[' '.join(s_part)]).most_common(1)[0][0]
+                if new_word in sentence.split():
+                    try:
+                        new_word = Counter(self.model_dict[' '.join(s_part)]).most_common(2)[1][0]
+                        if new_word=='</s>':
+                            break
+                    except:
+                        pass
+                    stopper+=1
+                    if stopper>2:
+                        break
+
+                sentence += ' ' + new_word
 
         sentence = re.sub('<s>','', sentence)
         sentence = re.sub(r'\s+',' ', sentence)
