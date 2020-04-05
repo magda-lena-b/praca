@@ -62,10 +62,3 @@ def rem_nasty(r):
     else:
         return r
 
-
-def perplexity(sentence, model):
-    """Calculated perplexity with 1-add smoothing
-
-    sentence: string
-    model: dictionary with n-grams"""
-
