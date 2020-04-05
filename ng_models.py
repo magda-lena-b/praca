@@ -83,7 +83,7 @@ class ng_models(object):
         steps: int
         max_sent: int
         """
-        ## TO DO - poprawić aby nie zwracalo znakow specjalnych
+        ## TO DO - poprawić aby nie zwracalo znakow specjalnych konca
         speech = list()
         
         while len(speech)<steps:
