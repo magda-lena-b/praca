@@ -122,10 +122,10 @@ class ng_models(object):
                     speech.append(sentence+'.')
         
         speech = re.sub('<s>', '', ' '.join(speech))
-        speech = re.sub('</s>', '', ' '.speech)
+        speech = re.sub('</s>', '', speech)
         speech = re.sub(r'\s+',' ',speech)
 
-        return ' '.join(speech)
+        return speech
 
 
     def perplexity(self, sentence):
