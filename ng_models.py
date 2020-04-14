@@ -83,7 +83,7 @@ class ng_models(object):
         steps: int
         max_sent: int
         """
-        ## TO DO - poprawić aby nie zwracalo znakow specjalnych konca
+        
         speech = list()
         
         while len(speech)<steps:
@@ -120,7 +120,11 @@ class ng_models(object):
                 
                 if ifend==0 and sent_len>=max_sent:
                     speech.append(sentence+'.')
-                
+        
+        speech = re.sub('<s>', '', ' '.join(speech))
+        speech = re.sub('</s>', '', ' '.speech)
+        speech = re.sub(r'\s+',' ',speech)
+
         return ' '.join(speech)
 
 
