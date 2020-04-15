@@ -162,7 +162,7 @@ class ng_models(object):
         stopper = 0
         try:
             sentence = self.sent_start + start_word.lower()
-            new_word = Counter(self.model_dict[sentence.split()[-self.n:][0]]).most_common(1)[0][0]
+            new_word = Counter(self.model_dict[' '.join(sentence.split()[-self.n:])]).most_common(1)[0][0]
             if new_word=='</s>':
                 sentence = re.sub('<s>','', sentence)
                 sentence = re.sub(r'\s+',' ', sentence)
