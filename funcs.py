@@ -1,5 +1,7 @@
 import re
 import pandas as pd
+import stanza
+
 
 def name_finder(t):
     """ Finds name of the speech author"""
