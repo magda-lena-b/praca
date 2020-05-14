@@ -7,6 +7,9 @@
 \usepackage[MeX]{polski}
 \usepackage[T1]{fontenc}
 \usepackage[english,polish]{babel}
+\usepackage{hyperref}
+
+
 
 \usepackage{amsmath, amsfonts, amsthm, latexsym} % głównie symbole matematyczne, środowiska twierdzeń
 
@@ -149,6 +152,8 @@
 \usepackage{wrapfig}
 \usepackage{graphicx}
 \usepackage{subfigure} %zeby mozna bylo kilka grafik obok siebie...
+\graphicspath{ {./imgs/} }
+\usepackage{longtable}
 
 \setcounter{secnumdepth}{4}
 %\titleformat{\subsubsection}
@@ -186,7 +191,7 @@
 %--------------------- 00. USTAWIENIA UZYTKOWNIKA -----------------------------------------------------------
 %------------------------------------------------------------------------------------------------------------
 
-\newcommand{\tytul}{Zastosowania metod procesowania w języku polskim}
+\newcommand{\tytul}{Zastosowanie metod przetwarzania języka naturlanego dla języka polskiego}
 %\renewcommand{\title}{Missing value handling for classification tree creation and application}
 %\newcommand{\type}{magisters} % magisters, licencjac
 \newcommand{\supervisor}{dr~Grzegorz~Koloch}
@@ -217,18 +222,22 @@ podpis promotora & \hspace*{100pt} & podpis autora
 \begin{center}
 \tytul
 \end{center}
-Praca zawiera przegląd dostęPnych rozwiązań i metod dostępnych w zakresie NLP (natural language processing) dla języka polskiego wraz z ich zastosowaniem na przykładowym zbiorze danych tekstowych i analizą rezultatów. \\
-
-
+Praca omawia wybrane zagadnienia z obszaru procesowania języka naturalnego skupiając się na możliwociach ich wykorzystania dla języka polskiego. W pracy umieszczono wyniki i analizę rezultatów zastosowania tych metod na przykładowym zbiorze danych tekstowych. \\
+Zbiór danych wybrany do analiz to transkrypcje przemówień sejmowych z lat 1989 - 2019 r. \\
+Praca skupia się na analizie i zastosowaniu następujących tematów: 
+\begin{itemize}
+\item modele n-gramowe,
+\item modelowanie tematyczne,
+\item analiza sentymentu.
+\end{itemize}
+Wykonano również analizy łączące tematy ze sobą oraz modele wykorzystujące wszystkie przygotowane informacje o korpusie.
 \end{abstract}
 }
 
-\null\thispagestyle{empty}\newpage
 
 %--------------------- 03. OSWIADCZENIE --------------------------------------------------------------------
 %-----------------------------------------------------------------------------------------------------------
 
-\null\thispagestyle{empty}\newpage
 
 \null \hfill Warszawa, dnia ..................\\
 
@@ -256,7 +265,6 @@ samodzielnie, co poświadczam własnoręcznym podpisem.
 \thispagestyle{empty}
 \newpage
 
-\null\thispagestyle{empty}\newpage
 
 
 %--------------------- 04. SPIS TRESCI ---------------------------------------------------------------------
@@ -265,8 +273,6 @@ samodzielnie, co poświadczam własnoręcznym podpisem.
 \tableofcontents
 \thispagestyle{empty}
 
-\newpage % JEŻELI SPIS TREŚCI MA PARZYSTĄ LICZBĘ STRON, ZAKOMENTOWAĆ
-% ALBO JAK KTOŚ WOLI WTEDY DWIE STRONY ODSTĘPU, DODAĆ \null\newpage
 
 %--------------------- 05. ZASADNICZA CZESC PRACY ----------------------------------------------------------
 %-----------------------------------------------------------------------------------------------------------
@@ -274,7 +280,7 @@ samodzielnie, co poświadczam własnoręcznym podpisem.
 \pagestyle{fancy}
 \pagenumbering{arabic}
 % -> NOTE: JEŻELI Z POWODU DUŻEJ ILOŚCI STRON W SPISIE TREŚCI SIĘ NIE ZGADZA, TRZEBA ZMODYFIKOWAĆ RĘCZNIE
-\setcounter{page}{11} 
+%\setcounter{page}{11} 
 
 %\chapter*{Wstęp}
 %\markboth{}{Wstęp}
@@ -282,20 +288,35 @@ samodzielnie, co poświadczam własnoręcznym podpisem.
 \chapter{Wstęp}
 %\markboth{}{Wstęp}
 %\addcontentsline{toc}{chapter}{Wstęp}
+W ostatnich latach obszar przetwarzania języka naturalnego (z ang. \textit{NLP - natural language processing}) rozwija się bardzo intensywnie. Powstają nowe rozwiązania pozwalające na zaawansowane przetwarzanie i analizę nieustrukturyzowanych danych jakimi są dane tekstowe. Coraz bardziej zaawansowane są modele pozwalające na interpretację jak również generowanie tekstu. \\
+Do niedawna możliwoci wykorzystania tych narzędzi w pracy z językiem polskim były ograniczone, lecz obecnie dostępnych jest już wiele pakietów oraz narzędzi, które znacznie ułatwiają zadania tego typu.
 
-W ostatnich latach obszar NLP rozwija się bardzo intensywnie. Powstają nowe rozwiązania pozwalające na zaawansowane przetwarzanie i analizę nieustrukturyzowanych danych jakimi są dane tekstowe. Coraz bardziej zaawansowane są modele pozwalające na interpretację jak również generowanie tekstu. \\
+\section{Cel i zakres pracy}\label{miss_vs_class}
 
-\section{podrozdzial}\label{miss_vs_class}
-
-Niniejsza praca skupia się na~
-
-\section{Cel i zakres pracy}
-Celem niniejszej pracy jest  \\
+Celem niniejszej pracy jest przegląd narzędzi NLP dostępnych dla języka polskiego oraz analiza zastosowań niektórych z nich na przykładowym zbiorze danych. \\
+Niniejsza praca skupia się na takich elementach NLP, które przy względnie niskim poziomie złożoności mogą przynieść interesujące rezultaty. Badano możliwości w zakresie prostego generowania tekstu, określania tematu wypowiedzi i jej sentymentu. Starano się połączyć te elementy podczas kontrukcji modeli, które na podstawie pewnych charakterystyk tekstu, potrafiłyby odgadnąć jego autora i określić jego cechy. 
+Dane, na których przeprowadzono analizy zawierają transkrypcje wystąpień sejmowych z lat 1989 - 2019 r. Dołączono do nich podstawowe informacje o autorze, co pozwoliło rozszerzyć zakres analiz o budowę modeli predykcyjnych różnego typu.
 
 \section{Przegląd rozdziałów}
-W pierwszym rozdziale pracy  (ang. \textit{Missing Complately At Random, MCAR}), losowy (ang. \textit{Minatural language processing}) oraz \\
+W pierwszym rozdziale pracy zaprezentowano przegląd pojęć i zgadnień związanych z przetwarzaniem języka naturalnego, które pojawiają się w niniejszej pracy. \\
 
-Podstawowe elementy przygotowywania danych do analiz związanych z przetwarzaniem języka naturalnego to:
+W drugim rozdziale pracy zaprezentowano krótki przegląd narzędzi, które mogą zostać wykorzystane podczas pracy z analizami języka polskiego. pakiety , embeddingi, morfeusz \\
+
+W trzecim rozdziale opisano zbiór danych, na którym przeprowadzano kolejne analizy. Znajduje się tu opis przetworzeń, jakie były konieczne do poszczególnych zadań. Każde zagadnienie wymagało innego podejścia do korpusu i innego zestawu informacji. Przeprowadzono dwa etapy czyszczenia danych, lematyzację, wektoryzację oraz przypisanie sentymentu. \\
+
+W rozdziale czwartym opisano rezultaty otrzymane podczas pracy z modelami n-gramowymi. Na potrzeby tych analiz napisano w języku python klasę dedykowaną modelom tego typu. Zaimplementowane metody pozwalały m.in. na 
+\begin{itemize}
+\item konstrukcję modeli o różnej złożoności i dla różnych wymiarów,
+\item generowanie tesktu w opartciu o dany obiekt typu model,
+\item kalkulację miary perplexity dla danych fragmentów tekstu
+\item generowanie zdania-reprezentanta danego modelu.
+\end{itemize}
+
+
+%---------------------------Rozdzial 2
+\chapter{Podstawowe elementy i zagadnienia związane z procesowaniem języka naturalnego}
+
+Procesowanie języka naturalnego jest bardzo szeroką dziedziną data science. Pokrywa gamę zagadnień rozpoczynając od najprostszych typu Podstawowe elementy przygotowywania danych do analiz związanych z przetwarzaniem języka naturalnego to:
 \begin{itemize}
  \item tokenizacja, czyli podział tekstu na segmenty, najczęściej pojedyncze słowa,
  \item stemming ma na celu obcięcie wszystkich przyrostków i przedrostów aby zbliżyć słowo do podstawowej postaci,
@@ -304,26 +325,72 @@ Podstawowe elementy przygotowywania danych do analiz związanych z przetwarzanie
 \end{itemize}
 
 
-\chapter{Wstępne procesowanie danych}
+%---------------------------Rozdzial 3
+\chapter{Dane i środowiska wykorzystane do analiz}
 
 \section{Źródło danych}
-Zbiór na którym zostaną przeprowadzone analizy został pobrany z serwisu kaggle.com. Zawiera transkrypcje przemówień polskich polityków  z lat 1989 – 2019 oraz profil każdego z mówców. 
+Zbiór na którym zostaną przeprowadzone analizy został pobrany z serwisu kaggle.com (\url{https://www.kaggle.com/paweladamczak/polish-politicians-speeches}). Zawiera transkrypcje przemówień polskich polityków  z lat 1989 – 2019 oraz profil każdego z mówców. \\
+Zbiór powstał poprzez zaczytanie plików w formacie pdf, które można znaleźć w archiwum sejmowym pod adresem \url{http://www.sejm.gov.pl/Sejm9.nsf/page.xsp/archiwum}. Większość plików ma charakterystyczny układ, w którym każde wystąpienie podzielone jest na części opatrzone nagłówkiem wskazującego autora tekstu umieszczonego poniżej. Niestety nie dla wszystkich kadencji został zachowany ten układ, co przełożyło się na problemy z identyfikacją autorów dla części wystąpień. Zostało to opisane w rozdziale \ref{section:autor}.
 
 \section{Format danych}
-Dane zostały udostępnione w formie bazy danych zawierającej dwie tabele. Pierwsza z nich zawiera szczegółowy profil każdego polityka. Do najistotniejszych informacji należą:
+Dane zostały udostępnione w formie bazy danych SQL zawierającej dwie tabele. Pierwsza z nich zawiera szczegółowy profil każdego polityka. W tabeli występuje 2626 posłów oraz 68 różnych wskazań partii z 8 kadencji. Imię i nazwisko posła nie jest kluczem głównym, ponieważ mogą się one pojawiać wielokrotnie w różnych kadencja i z przypisaniem do różnych partii. Najistotniejsze informacje zawarte w tej tabeli przedstawiono w Tabeli \ref{t1}. \\
 
-\begin{center}
+Druga tabela zawiera transkrypcje przemówień sejmowych. Najistotniejsze kolumny przedstawiono w Tabeli \ref{t2}. 
+Tabela zawiera 272 321 wierszy, w tym 272 221 z niepustym polem \textit{speech\_raw}. Niektóre wiersze zawierają fragmenty tych samych wystąpień. Dzieje się tak w wypadku, gdy przemówienie było przerywane wypowiedziami innych mówców. Unikalnych wystąpień znajduje się z bazie ok. 19 tys. \\
+Ponieważ dane były dostarczone w formie bazy SQL, część analiz wykonano w tym środowisku. Większość analiz na dalszym etapie wykonano w języku python.
+
+
+\begin{table} \centering
 \begin{tabular}{ |c|c| } 
  \hline
  Nazwa kolumny w zbiorze & Opis  \\ \hline
- full\_name & Imię i nazwisko \\  \hline
- cell7 & cell8 \\ 
- \hline
+ full\_name & imię i nazwisko \\  \hline
+ elected & data wybrania na posła \\ \hline
+graduated\_school & ukończona szkoła/uczelnia \\ \hline
+education\_level & wykształcenie \\ \hline
+occupation & zawód \\ \hline
+party\_section & partia \\ \hline
+number\_of\_votes & liczba otrzymanych głosów \\ \hline
+languages & znane języki \\ \hline
+last\_party & ostatnia partia \\ \hline
 \end{tabular}
-\end{center}
+\caption{Dane dotyczące autorów wystąpień}
+\label{t1}
+\end{table}
+
+\begin{table}[h] \centering
+\begin{tabular}{ |c|c| } 
+ \hline
+ Nazwa kolumny w zbiorze & Opis  \\ \hline
+session\_number & numer sesji \\ \hline
+date\_ & data wystąpienia \\ \hline
+number\_ & numer porządku obrad  \\ \hline
+speech\_title & tytuł wystąpienia \\ \hline
+speech\_raw & tekst wystąpienia \\ \hline
+\end{tabular}
+\caption{Dane dotyczące wystąpień} \label{t2}
+\end{table}
+
 
 \section{Algorytm przypisania autora tekstu}
-Występowanie brakujących wartości w \\ 
+\label{section:autor}
+
+Podczas przeglądania danych zidentyfikowano błędy w przypisaniu id autorów przemówień. Konsekwencją tego jest brak możliwości łatwego przypisania autora danego wystąpienia do jego tekstu. Błędy występowały dla większości wpisów w bazie i mimo tego, że sprawiały wrażenie systematycznej zmiany (poprawna wartość wydawała się bliska z kontekście porządku leksykograficznego), nie udało się ustalić algorytmu, który mógłby przypisać poprawne wartości w sposób automatyczny.  \\
+W związku z powyższym przypisanie autora (\textbf{author\_final}) wykonano w następujących krokach (10\_ author\_final.sql):
+\begin{enumerate}
+\item Wiele wystąpień zaczyna się od schematu „Poseł Imię Nazwisko:”. Pierwsze występujące w takim kontekście imię i nazwisko przypisano jako dane autora z tekstu (kolumna author\_by\_text).
+\item Przypisano imię i nazwisko autora w oparciu o id\_ z bazy (kolumna author\_by\_id).
+\item Dla przypadków gdzie dla danego id, chociaż raz author\_by\_text jest równe author\_by\_id, przypisano te wartości jako author\_final.
+\item Dla pozostałych przypadków sprawdzono jaka wartość author\_by\_text pojawia się najczęściej w obrębie danego id. Jeśli wartość była niepusta, została przypisana jako author\_final.
+\item Pozostałe przypadki to takie, gdzie najczęściej pole author\_by\_text było puste, tj. w tekście wystąpienia nie występowało zestawienie „Poseł Imię Nazwisko:”. Wynika to z różnej postaci plików  transkrypcją – dla części z nich fragmenty pogrubione na poniższym obrazku nie znalazły się w tekście dostępnym w bazie.
+\begin{figure}[h]
+\includegraphics{screen_pdf}
+\centering
+\end{figure}
+\item W trakcie analizy danych niektóre id były weryfikowanych ręcznie w oryginalnych plikach pdf. Wartości dla nich wprowadzono ręcznie w kodzie.
+\end{enumerate}
+Po zastosowaniu powyższych kroków w bazie brakowało przypisania author\_final dla 795 id (na 3828). Dla pojedynczych fragmentów wystąpień uzupełnienie wyniosło ok 83\%.
+
 
 \section{Czyszczenie danych}
 Wykonano następujące etapy czyszczenia danych: 
@@ -345,197 +412,319 @@ Następnie przygotowano drugi zestaw tekstów, które oczyszczono jeszcze bardzi
 
 \end{itemize}
 
-Po tym etapie czyszczenia w bazie pozostało 272 217 fragmentów przemówień, z których 225 385 ma przypisanego autora. Oba zestawy tekstów z różnym poziomem oczyszczenia będą stosowane w różnych analizach.
+Po tym etapie czyszczenia w bazie pozostało 272 217 fragmentów przemówień o niezerowej długości, z których 225 385 ma przypisanego autora. Oba zestawy tekstów z różnym poziomem oczyszczenia będą stosowane w różnych analizach. Przykładowo do konsttrukcji modeli n-gramowych wykorzystanoo oba zestawy danych. \\
+Fragmenty tych samych wypowiedzi, zgrupowane po dacie, autorze i tytule zostały połączone.
+Po usunięciu tekstów, które po wszystkich modyfikacjach stały się puste, w bazie zostało \textbf{158 885} tekstów z przypisanym autorem.
+
+
+%--------------------------- rozdzial 4
+\chapter{Wstępna analiza danych}
+
+Dla tekstów z przypisanym autorem przeprowadzono wstępną analizę danych. Po usunięciu cyfr, znaków interpunkcyjnych oraz słów z listy polskich \textit{stopwords} analizowano częstości w celu weryfikacji i rozszerzenia listy \textit{stopwords}. W wyniku analizy dodanie do niej następujące elementy, ze względu na niską wartość informacyjną i ryzyko wprowadzenia zaburzeń do dalszych analiz:
+\begin{itemize}
+\item pkt \item art \item 'Wysoka Izbo!' \item 'Panie Ministrze!' \item 'Dziękuję bardzo.'
+\end{itemize}
+
+Po wykonaniu tego czyszczenia, w korpusie znajduje się nieco ponad 42 mln słów. Przed lematyzacją w korpusie występuje 367 716 różnych słów.\\
+Najczęściej wypowiadający się posłowie znajdują się w Tabeli \ref{t41}. 
+
+\begin{table}[h] \centering
+\begin{tabular}{|c|c|c|}
+\hline
+author\_final & Liczba slów	& Liczba wypowiedzi \\\hline
+Stanisław Stec	& 477862 & 	1368 \\\hline
+Mirosław Pawlak	& 203379 & 	1134 \\\hline
+Romuald Ajchler	& 401879 	& 1120 \\\hline
+Jan Kulas	& 547001	& 1101 \\\hline
+Andrzej Szlachta	& 242306	 &  982 \\
+\hline
+\end{tabular} \caption{Najczęściej wypowiadający się posłowie} \label{t41}
+\end{table}
+
+Posłowie z największą liczbą słów w wypowiedziach znajdują się w Tabeli \ref{t42}.\\\\\\\\
+
+
+\begin{table}[h!] \centering
+\begin{tabular}{|c|c|c|}
+\hline
+author\_final	& Liczba slów	& Liczba wypowiedzi \\\hline
+Jan Kulas	& 	547001	& 	1101 \\\hline
+Józef Zych	& 	514652	& 	878 \\\hline
+Jerzy Jaskiernia	& 	481512	& 	658 \\\hline
+Stanisław Stec	& 	477862	& 	1368 \\\hline
+Tadeusz Tomaszewski	& 	412781	& 	917 \\\hline
+\end{tabular} \caption{Posłowie z najwięszą liczbą słów} \label{t42}
+\end{table}
+
+Słów, które można określić jako „rzadkie”, tj. występujące w całym korpusie nie więcej niż 5 razy jest 226 599 (w tym 126382 występuje tylko jeden raz), czyli stanowią one istotną większość. Przykładowe słowa pojawiające się dokładnie jeden raz w całym korpusie:\\
+ zaanektować, babette, opowiadaną, odejmowana, trawiona, kolektywistyczna, zagonów, troić, maćkowy, centralizowany.\\
+Słowa pojawiające się najczęściej, to:
+\begin{table}[h] \centering
+\begin{tabular}{| c | c |}
+\hline
+słowo & liczba wystąpień \\ \hline
+rząd & 95603 \\
+projektu & 95657 \\
+prawa &  96092 \\
+chodzi & 99480 \\
+panie & 108932 \\
+projekt & 113847 \\
+pytanie & 116217 \\
+pracy & 118301 \\
+komisji & 146153 \\
+państwa & 148339\\
+\hline
+\end{tabular}
+\caption{Słowa pojawiające się najczęściej w korpusie}
+\end{table}
+
+%------------------------------------------------ rozdział 5
+
+\chapter{Modele n-gramowe}
+
+Pierwszym elementem analizowanym na danym korpusie były modele n-gramowe. Takie modele bazują na statystykach występowania n-gramów w analizowanym korpusie i mogą służyć do przewidywania kolejnego elementu sekwencji, jak również do generowania nowych sekwencji w~oparciu o zaobserwowane zależności. Można budować zarówno modele oparte o słowa jak i inne elementy jak pojedyncze znaki czy sylaby. Sekwencje 1-gramowe nazywane są unigramami, 2-gramowe bigramami a 3-gramowe trigramami. Wraz ze wzrostem parametru \textit{n} wzrasta zdolność modelu do odzwierciedlania bardziej złożonych zależności pomiędzy słowami, ale istotnie rośnie zapotrzebowanie na dane do jego konstrukcji.
+Przykładowo dla modelu opartego o słowa prawdopodobieństwo, że w naszej sekwencji, po słowie „praca” wystąpi słowo „zaliczeniowa” wynosi:
+\begin{equation}
+P(zaliczeniowa|praca) = \frac{cnt(praca\_ zaliczeniowa)}{cnt(praca \_\_\_)}
+\end{equation}
+Gdzie \_\_\_ oznaca dowolne słowo a liczniki „cnt” zostały wygenerowane na korpusie, na którym trenowano model.
+W praktyce, aby uzyskać rozkłąd prawdowpodobieństwa, należy zastosować wygładzanie, które zaadresuje problem zwracania prawdopodobieństw dla słów, które nie znalazły się w oryginalnym korpusie.\\
+Modele n-gramowe są wykorzystywane m.in. w rozpoznawaniu mowy, badania poprawności pisowni i tłumaczeniu maszynowym.\\
+W niniejszej pracy skupimy się na:
+\begin{itemize}
+\item generowaniu treści,
+\item szacowaniu prawdopodobieństwa pojawienia się okrs=eślonego zdania w wypowiedzi,
+\item znajdowaniu \textit{zdania - reprezentanta} dla danego korpusu.
+\end{itemize}
+
+Modele powstawały w wersjch wersjach dla 1, 2 oraz 3-gramów. Dla obu opcji w pierwszym kroku przygotowano słownik zawierający wszystkie występujące kombinacje odpowiednich n-gramów ze słowami po nich następującymi. 
+Aby uprościć i zautomatyzować konstrukcję modeli, przygotowano klasę ng\_models (ng\_models.py). Obiekt tej klasy jest modelem n-gramowym utworzonym zgodnie z przekazanymi parametrami n oraz corpus. Tworzenie modelu odbywa się z uwzględnieniem znaków specjalnych oznaczających początek i koniec zdania. Podczas jego konstrukcji następuje przetworzenie korpusu metodą \textit{process\_text}, która m.in. usuwa znaki specjalne, duże litery, wielokrotne spacje.
+
+\section{Generowanie przemówień} \label{section:gen}
+
+Generowanie przemówień polega na przypisaniu słowa początkowego (lub wybraniu losowego) a następnie w sposób wybieraniu słów kolejnych na bazie słownika prawdopodobieństw zbudowanego w poprzednim punkcie.
+Wraz ze wzrostem n, rośnie zapotrzebowanie na dane do modelu. W przypadku gdy danych do uczenia jest zbyt mało, model będzie po prostu odtwarzał zdania, które pojawiały się w danych uczących. Z~drugiej strony takie modele potrafią generować sekwencje lepszej jakości, bardziej przypominające prawdziwe zdania, ponieważ zachowują więcej logicznych powiązań pomiędzy kolejnymi słowami.
+Do zbudowania najprostszych modeli nie były wykorzystane żadne z pakietów związanych z NLP. 
+
+Za generowanie wypowiedzi odpowiada metoda \textit{generate} klasy \textit{ng\_models} pozwalająca generować sekwencje zdań zadanej długości. Metoda zaczyna od losowego słowa z listy słów pojawiających się na początku zdań. Każde zdanie generowane jest oddzielnie do momentu aż zostanie wylosowany znacznik końca zdania, lub zostanie przekroczony parametr ograniczający długość zdania.\\
+Przykładowe przemówienie dla modelu 1-gramowego wygenerowane z parametrami (steps=10, max\_sent=10):\\
+\textit{Panie marszałku. Poza tym pracownikom projekt ordynacji podatkowej dla polski 1. Nie przekreślamy sprawę jasno sformułowane są niezgodne z dwiema. Jak zostanie zwrócony jako szef zespołu na wykreśleniu pkt. Boję się o swoich list to zasłużone dla strażaków. Chciałbym skupić wyłącznie do spożycia alkoholu oraz refundacji. Wysoka izbo. Jakie gwarancje zastawnika niż pobierających świadczenia z góry rozdzielanie. Swoich dzieci. W praktyce zostało wyartykułowane.} \\
+
+Przykładowe przemówienie dla modelu 1-gramowego wygenerowane z parametrami (steps=10, max\_sent=20):\\
+\textit{Natomiast takich uchwał dotyczących kwestii warunków prawnych w budowie. Szanowny panie marszałku. Pierwsza. W rozporządzeniu rady sądownictwa dopiero na swoich kompetencji i. To kolejny projekt i szczególnej państwowej służby ochrony państwa. W takiej potrzeby zwiększania środków europejskich demokratów formułuje wnioski. Szanowni państwo dzisiaj o szczególne znaczenie specjalnych jest wierną. Powiedzieliśmy do spółki na stworzenie nowej rezerwy zostanie skazany. Panie marszałku. Manipulowanie tą wersją projektu skłania do kilkuletnich zaniedbań i. Pierwszy pracę. Dopiero w związku z przeznaczeniem a przede wszystkim informacyjne. To proszę państwa dla poszczególnych powiatów oraz zniesienie ograniczeń. Przypuszczam że każda ze strony młodzieży oraz upoważnienie na. Później próbuje ogarnąć tej sprawie wyjścia naprzeciw wspomnę np. Można było. Potrzeba uchwalenia zaproponowanego przez radę ministrów. Jej do pana ministra tchórzewskiego byłego likwidatora majątku zagrożonego. Wprowadza tę izbę nie udało mi wiadomo że albo. Wysoki sejmie.}\\
+
+Łatwo jest ocenić, że powyższe wypowiedzi nie pochodzą z prawdziwych wystąpień sejmowych. Możliwych kombinacji słów następujących po sobie jest zbyt dużo aby taki model mógł zachować logikę pomiędzy kolejnymi elementami zdania. Modele bigramowe powinny lepiej sobie z tym radzić.\\\\
+Przykładowe przemówienie dla modelu 2-gramowego wygenerowane z parametrami (steps=10, max\_sent=10):\\
+\textit{Mam kłopot z budowaniem nowych mieszkań w złym świetle respektowanie. To podchodzi pod administrację. Chodzi zapewne o wiele trudniejsza jest sytuacja w państwie członkowskim. Jeżeli obie strony uznały za obowiązujące zajmowanie przez 10 lat. Panowie osiągnęli a my słyszymy sto takich zgromadzeń. Jeżeli uzyskaliśmy technologie na warunkach partnerskich; wtedy jest ona nam. Do orzekania... Tyle jesteś samorządny o tyle obecnie średnio 133 osoby na. Przyjęcie kompromisowych rozwiązań łączących projekt rządowy nad którym dyskutujemy to. Jak kupuję jakiś towar.}\\
+
+Przykładowe przemówienie dla modelu 2-gramowego wygenerowane z parametrami (steps=10, max\_sent=20):\\ \textit{Chciałbym wykreślić ze sprawozdania... Powoli zanika a mogła to być może wykorzystawszy także niezły poziom techniczno-technologiczny jest znacznie lepszy niż ten który złożył przysięgę. Jednak prenumerować przez pocztę przez swoich i dlatego nie ma powodu do jakichkolwiek sytuacji które mogą naruszać wolności wykonywania zawodu. Czy zrewaloryzowana ale też o rozruchu. Nie ustosunkował.właśnie do tego że komitet badań naukowych lub organizacji społecznej o czym mówił pan prezes socha był łaskaw pan. To przekształcane w pracowniczy program emerytalny jest instytucją samofinansującą się która jest w pełni popiera i w imieniu posłów z. Będziemy kontrolować waszą działalność trybunał stanu który decyzją sejmu termin ten wydaje się tu toczy będzie miała zastosowanie w postępowaniu. Nie ochronę uprawnień najemców i dzierżawców które już dzisiaj plagi społecznej. Mówię wewnętrzna organizacja tego ratownictwa także. Gdyby obecne napięcia między przedstawicielami ministerstwa skarbu czy po przyjęciu będzie miała jedno pytanie: co pani poruszyła są prawnie chronione.}\\
+
+Widać, że w drugim modelu tekst bardziej przypomina realnie wystąpienia i prawdziwe zdania. Oczywiście w dalszym ciągu nie ma żadnych wątpliwości, że nie są to realne wypowiedzi, ale ich czytanie jest nieco przyjemniejsze niż dla poprzedniego modelu.
+Podjęto również próbę zbudowania modelu 3-gramowego. Czas kalkulacji wydłużył się istotnie. Budowa słownika do modelu trwała prawie 30 minut.\\
+Przykładowy tekst wygenerowany z parametrami (steps=10, max\_sent=10):\\ \textit{Czy elementem realizacji polityki gospodarczej. Już zadała to pytanie bo jest tajemnicą poliszynela unikają one płacenia miliardowych podatków i nadmiernie wykorzystują pracowników. I~marek belka nie budzi naszego zaufania. Dziękuję unii wolności za to że ma wygrać najlepszy. Chciałabym przytaczać w tej chwili problem bezrobocia mimo że ten dokument został odtajniony decyzją wiceministra spraw wewnętrznych i administracji i innym. Wiadomo są jedne z głównych czynników utrudniających udany proces integracji repatriantów z polskim społeczeństwem z obywatelami żeby przez zaniechania rządu nie. Przecież trudno się spodziewać tego że przy wyważeniu argumentów ograniczenie czasu zgłaszania weta też ma pewne koncepcje które należałoby wysokiej izbie. Połowa to mogą być grupy członkowskie. Wtedy ta nowelizacja rzeczywiście mogła wejść w życie na drugim etapie jego nowelizacji. Panie prokuratorze zwrócić uwagę że istnieje bardzo złe mniemanie o politykach i o polityce wobec cudzoziemców polityce imigracyjnej jest takim dzwonem.}\\
+
+Zdania sprawiają wrażenie lepiej skonstruowanych niż dla poprzednich modeli. Jednak stosunkowo mały zbiór danych uczących sprawia, że model w dużym stopniu powtarza całe zdania ze zbioru uczącego.
+Przyjrzyjmy się jak wygląda słownik dla niektórych 3-gramów występujący w powyższym tekście. \\
+
+\includegraphics[scale=0.8]{s1}
+
+\begin{figure}
+\includegraphics[scale=0.8]{s2}
+\end{figure}
+\begin{figure}
+\includegraphics[scale=0.8]{s3}\\
+\includegraphics[scale=0.8]{s4}
+\end{figure}
+
+
+Z powyższego wynika, że do budowy dobrego modelu dla większych wartości \textit{n} dla języka polskiego potrzebne są dużo większe zestawy danych. Dla języków z prostszymi gramatykami, gdzie nie występuje tak wiele odmian słów, wymagania te mogą być niższe.
+
+
+\section{Badanie prawdopodobieństwa wystąpienia danego zdania} \label{section:perp}
+Dla modeli n-gramowych mamy możliwość przeanalizowania spójności danej sekwencji z modelem. Tj. jak prawdopodobne jest, że dane zdanie pochodzi z danego modelu. Można to szacować za pomocą wartości \textit{perplexity}, która generalnie służy do oceny jakości modelu n-gramowego na danych testowych. Dla pojedynczego zdania o licznie wyrazów \textit{N} możemy wyliczyć:
+
+\begin{equation}
+Perplexity=p(w_{test})^{-\frac{1}{N}}
+\end{equation}
+\begin{equation}
+p(w_{test})=\prod_{i=1}^{N+1} p(w_{i} | w_{i-n+1}^{i-1})
+\label{eq53} \end{equation}
+
+Liczniki i indeksowanie są tak dopasowane aby uwzględniać pozycję początkową i końcową wyrazu w zdaniu poprzez uwzględnianiu w analizach dodatkowych tokenów oznaczających początek i koniec zdania.
+Aby zaadresować kwestię zerowania się iloczynu w przypadku pojawienia się n-gramów spoza korpusu, na którym trenowano model, wprowadza się różne metody wygładzania tej miary. Tutaj zastosujemy „add-1 smoothing”, która modyfikuje kalkulację pojedynczych prawdopodobieństw w następujący sposób:
+
+\begin{equation}
+p(w_{i} | w_{i-n+1}^{i-1}) = \frac{c(w_{i-n+1}^i)+1}{c(w_{i-n+1}^{i-1}) +V}
+\label{eq54} \end{equation}
+Aby zapewnić, że otrzymane wartości będą poprawnym rozkładem prawdopodobieństwa, wartość \textit{V} musi być równa liczbie możliwych kontynuacji każdej sekwencji powiększonej o 1 ze względu na możliwy koniec zdania.\\
+
+Za kalkulację tej wielkości odpowiada metoda \textit{perplexity} zaimplementowana dla klasy \textit{ng\_models}. Im mniejsza wartość perplexity, tym większa spójność zdania testowego z korpusem, na którym uczony był model.
+Przykładowo dla modelu 2-gramowego z poprzedniego punktu otrzymujemy dla zdania \textit{"Dzisiejsze posiedzenie ma na celu omówienie projektu ustawy"}’ wartość 109 921 a dla zdania \textit{"Lwy to zwierzęta kotowate żyjące na sawannie"} 4 240 107.
+
+\section{Jakość i porównywalność modeli budowanych na mniejszych korpusach}
+Jak można zaobserować na wynikach otrzymanych w rozdziale \ref{section:gen}, jakość modelu rozumiana jakość zdolność do imitacji tekstu z korpusu poprawia się istotnie przy wzroście parametru \textit{n}. Wymaga to jednak korpusu o dużym rozmiarze. W tym rozdziale spróbujemy odpowiedzieć na pytanie, czy mniejsze korpusy pozwalają na budowę modeli o interesujących właściwościach. Skupimy się na określaniu i mierzeniu różnicy pomiędzy modelami, z wykorzystaniem miary wprowadzonej w rozdziale \ref{section:perp}.
+
+\subsection{Modele dla pojedynczych mówców}
+Ze względu na niedużą wielkość korpusu po podzieleniu na poszczególnych autorów, na potrzeby tej analizy konstruowano wyłącznie modele unigramowe. Zbudowano oddzielne modele dla 5 polityków z największą liczbą słów w danych (400 – 500 tys.) oraz dla trzech z istotnie mniejszą ilością słów (<100 tys.). Porównano wyniki dla kilku mniej lub bardziej prawdopodobnych zdań. Wyniki znajdują się na rysunku \ref{pic:51}. \\
+
+Na szaro zaznaczone są osoby, ze stosunkowo dużym zbiorem danych uczących. Widać, że ma to istotny wpływ w sytuacjach gdy oceniane są zdania „mało prawdopodobne”. Wówczas w kalkulacji prawdopodobieństwa ciągu wyrazów pojawiają się bardzo małe wartości, co z kolei przekłada się na wysokie perplexity. Ogółem prawdopodobieństwa mają podobne trendy dla wszystkich autorów, ale warto zauważyć zaburzenie kolejności pomiędzy zdaniami „Demokracja jest najlepszym systemem politycznym” a „Zupełnie przypadkowy układ pięciu słów”. Niemniej cieszy, że sekwencja „lew czarownica i stara szafa” w każdym przypadku są opcją najmniej prawdopodobną.\\\\\\
+
+\begin{figure}[h] 
+\includegraphics[scale=1.3]{p1} 
+\centering
+\caption{Miara perplexity dla modeli budowanych per mówca} \label{pic:51}
+\end{figure} 
+Wykres \ref{pic:52} pokazuje rozrzut wartości zależny od modelu, który pokazuje, że przy tak małych zbiorach uczących, trudno jest porównywać wartości pomiędzy modelami.\\
+
+\begin{figure}[h] 
+\includegraphics[scale=0.8]{p2} 
+\centering
+\caption{Wizualizacja miary perplexity dla modeli budowanych per mówca} \label{pic:52}
+\end{figure}
+Niemniej przeglądając słowniki dla poszczególnych modeli budowanych w ten sposób, widać, że cechuje je duża przypadkowość. Zbyt wiele n-gramów nie będzie się w nich odnajdywać i będą kontrybuowały do miary z tą samą, najniższą wartością. Zdecydowanie też miara ta nie nadaje się do porównywania  modeli budowanych na korpusach o istotnie różnej liczności.
+
+\subsection{Modele dla partii}
+Ponieważ modele budowane dla pojedynczych osób wydawały się budowane na zbyt małych korpusach, powtórzono analizy grupując autorów wg najnowszego przypisania do partii (SQL). Liczności słów w korpusie dla głównych partii wyglądają następująco:
+\begin{center}
+\begin{tabular}{|c|c|c|} 
+\hline
+partia & liczba słów & liczba wypowiedzi \\ \hline
+Prawo i Sprawiedliwość & 12 409 825 & 31 630 \\ \hline
+Sojusz Lewicy Demokratycznej & 13 143 036 & 27 129 \\ \hline
+Platforma Obywatelska & 9 438 332 & 24 977 \\ \hline
+Polskie Stronnictwo Ludowe & 8 256 113 & 17 851 \\ \hline
+posłowie niezrzeszeni & 3 735 227 & 7 358 \\ \hline
+Akcja Wyborcza Solidarność & 3 304 864 & 5 642 \\ \hline
+Samoobrona & 2 027 951 & 4 407 \\ \hline
+\end{tabular}
+\end{center}
+Wartości są istotnie wyższe, oczekiwane są więc stabilniejsze wyniki. \\
+Zweryfikowano wartości perplexity na tym samym zbiorze zdań testowych. Wyniki pokazano na rysunku \ref{pic:53}. \\\\
+\begin{figure}[h] 
+\includegraphics[scale=0.6]{p3} 
+\centering
+\caption{Miara perplexity dla modeli budowanych per partia} \label{pic:53}
+\end{figure} 
+\begin{figure}[h] 
+\includegraphics[scale=0.6]{p4} 
+\centering
+\caption{Wizualizacja miary perplexity dla modeli per partia} \label{pic:54}
+\end{figure}
+
+Na wykresie \ref{pic:54} porównano wyniki dla modeli unigramowych i bigramowych.
+Można zauważyć, że dla modelu 1-gramowego wartości perplexity są dużo niższe co wynika m.in. z tego, że łatwiej trafić na wyrażenie dwuwyrazowe, które się w modelu pojawia niż 3 wyrazowe. Na pewno widać większą stabilność wyników. Porównywanie konkretnych wartości pomiędzy modelami zdecydowanie ma więcej sensu.
 
 
 
+\section{Budowa zdań w oparciu o maksymalizację prawdopodonieństwa}
+Poniższe analizy wykonano na tekście oczyszczonym z najczęściej pojawiających się, mało informacyjnych fraz typu „Panie Marszałku!”. \\
+Znając prawdopodobieństwa następowania kolejnych słów po sobie, można spróbować zbudować zdanie minimalizujące wartość perplexity, tj. maksymalizujące prawdopodobieństwo „zobaczenia go w modelu”. W tym celu wyposażono klasę \textit{ng\_models} o metodę \textit{mprob\_sent}. Celem tego ćwiczenia było zbadanie możliwości otrzymania zdania, które byłoby najbardziej charakterystyczne dla danego korpusu, czyli można by je określić jako dewizę związaną z danym tematem, osobą czy też grupą. \\
+Metoda zakłada pobranie pierwszego słowa zdania od użytkownika a następnie wybieraniu kolejnych słów wg prawdopodobieństw w modelu. Czyli jeśli słowem początkowym jest słowo „poseł”, metoda sprawdzi jakie n-gramy pojawiały się w modelu zaczynające się od słowa poseł i wybierze najczęstszy. Przykładowe najczęstsze następniki słowa „poseł” w modelu 1-gramowym dla wybranego mówcy.\\
 
-%----------------------------------------------------------------------------------------------------------%----------------------------------------------------------------------------------------------------------%----------------------------------------------------------------------------------------------------------%----------------------------------------------------------------------------------------------------------
-%----------------------------------------------------------------------------------------------------------%----------------------------------------------------------------------------------------------------------%----------------------------------------------------------------------------------------------------------%----------------------------------------------------------------------------------------------------------
-%\section{Przykładowy podrozdział}
+\begin{figure}[h] 
+\includegraphics[scale=0.8]{m1} 
+\centering
+\end{figure}
+ 
+Niestety okazuje się, że taki algorytm bardzo łatwo wpada w pętle. Przykładowe zdania otrzymane w wyniku jego działania to:\\
+\textit{Poseł sprawozdawca mówił o tym że w tym że w tym że w tym że w tym że w tym że w tym że w tym że w tym że w tym.} \\
+\textit{Ja to jest to jest to jest to jest to jest to jest to jest to jest to jest to jest to jest to jest to jest to jest to jest to.}\\
+Powód jest zobrazowany na poniższym obrazku.
+\begin{figure}[h] 
+\includegraphics[scale=0.8]{m2} 
+\centering
+\end{figure}
 
-%\begin{definition}[Definicja]
-%\textit{Definicją} nazywamy wypowiedź o określonej budowie, w której informuje się o znaczeniu pewnego wyrażenia przez wskazanie innego wyrażenia należącego do danego języka i posiadającego to samo znaczenie.
-%\end{definition}
+W takim przypadku, jeśli model trafi w pewnym momencie na słowo „to”, zapętli się i będzie powtarzał 2-gram „to jest”. \\
+Jednym z możliwych rozwiązań jest zakaz powtarzania słów w obrębie jednego zdania. W przypadku trafienia na słowo, które już się pojawiło w trakcie generowania, wybieramy kolejne wg częstości pojawiania się. Kończymy generowanie, gdy sytuacja powtarza się zbyt często. Wówczas otrzymujemy np.:\\
+\textit{Poseł sprawozdawca mówił o tym że w tej ustawy.}\\
+\textit{Ja to jest bardzo ważne.}
 
-%\subsection{Przykładowy punkt}
+W przypadku, gdy do metody nie zostanie przekazane pierwsze słowo, generowanie rozpocznie się od słowa, które najczęściej pojawia się jako pierwsze w zdaniach w danym korpusie. W poniższej tabeli umieszczono porównanie wyników dla różnych osób w zależności od słowa początkowego.\\
 
-%Poniżej punktu nie schodzimy.
+\begin{figure}[h] 
+\includegraphics[scale=1.1]{m3} 
+\centering \caption{Zdania wygenerowane w oparciu o maksymalizację prawdopodobieństwa - politycy}
+\end{figure}
 
-%\begin{definition}[Równanie]
-%\textit{Równaniem} nazywamy formę zdaniową postaci $t_1 = t_2$, gdzie $t_1, t_2$ są termami przynajmniej jeden z nich zawiera pewną zmienną.
-%\end{definition}
+Niestety wyniki są do siebie bardzo podobne. Wygląda na to, że mimo rozróżnienia na poszczególnych mówców, w modelach zostały odzwierciedlone zasady ogólne języka. 
+Długość otrzymanych zdań jest bezpośrednią pochodną skłonności do zapętlania się słów w danym korpusie. Widać, że dla większości najczęstszym słowem jest „w”.\\
+Jako alternatywną metodę, która mogłaby wpłynąć na „urozmaicenie” generowanych zdać, rozważano usunięcie z korpusu tzw. \textit{stopwords}. To jednak mogłoby generować zdania nienaturalne w swojej gramatyce oraz zupełnie już pozbawione logiki nawet w horyzoncie kilku słów. Testowano również wykorzystanie modeli bardziej złożonych, tj. trigramowych, niestety te najczęściej cytowały dosłownie jedno ze zdań korpusu.\\
+Również generowanie najbardziej prawdopodobnego zdania z modeli dla partii przyniosło rozczarowujące rezultaty. Okazuje się, że dla tego zadania zwiększony rozmiar korpusu powoduje, że modele 1-gramowe stają się zbyt podobne. Generowane zdania były prawie identyczne. \\
 
-%\begin{example}
-%Przykładem równania jest:
-%\begin{equation}
-%2+2=4.
-%\end{equation}
+\begin{figure}[h] 
+\includegraphics[scale=1.1]{m4} 
+\centering \caption{Zdania wygenerowane w oparciu o maksymalizację prawdopodobieństwa - partie (1-gram)}
+\end{figure}
 
-%Jeśli nie chcemy numerka przy równaniu, piszemy:
-%\begin{equation*}
-%2+2=4.
-%\end{equation*}
+Dla modeli 2-gramowych zdania są nieco bardziej zróżnicowane, ponieważ im dłuższe są n-gramy, na których opiera się model, tym mniejsza szansa, że będą się powtarzać w różnych korpusach równie często. Dalej jednak są dość podobne. \\
+\begin{figure}[!ht] 
+\includegraphics[scale=1.1]{m5} 
+\centering \caption{Zdania wygenerowane w oparciu o maksymalizację prawdopodobieństwa - partie (2-gram)}
+\end{figure}
 
-%Można też:
-%\[
-%2+2=4.
-%\]
+Konstrukcja	ciągów wyrazów może zatem mieć więcej zastosowań w przypadkach, gdy jednocześnie spełniony jest warunek dotyczący większej ilości słów w korpusie i zadane są odpowiednie warunki brzegowe pozwalające na zróżnicowanie wyników.
 
-%Równanie (\ref{rownanie}) jest fałszywe. Referencje (i kilka innych rzeczy) działają po dwukrotnym przekompilowaniu \TeX -a.
+\chapter{Dalszy processing danych}
+Do kolejnych etapów analiz konieczne było rozszerzenie zakresu danych. Na danych wykonano lematyzację, wektoryzację oraz dodano oznaczenie sentymentu.
 
-%\begin{equation}\label{rownanie}
-%\int \limits_{0}^{1} x \; dx = \frac{3}{2}.
-%\end{equation}
+\section{Lematyzacja} \label{section:lem}
+Do tego etapu pracy z danymi wykorzystano pakiet pythonowy stanza \url{https://stanfordnlp.github.io/stanza/index.html#about}. Jest to pakiet, który może być wykorzystywany m.in. do tokenizacji tekstu, lematyzacji słów, określania części mowy oraz zadań z obszaru NER (Named Entity Recognition).  Modele w pakiecie obejmują ponad 70 języków, w tym polski. Bazują na projekcie Universal Dependencies, którego celem jest spójny opis gramatyk dla różnych języków, który jest rozwijany w celu trenowania rozwiązań dla wielu języków jednocześnie.
+W niniejszej pracy wykorzystano modele oparte o korpus LFG, który zawiera 17 246 zdań i 130 967 tokenów. Zawiera oznaczenia 15 części mowy: ADJ, ADP, ADV, AUX, CCONJ, DET, INTJ, NOUN, NUM, PART, PRON, PROPN, PUNCT, SCONJ, VERB.\\
+Przykładowe wywołanie dla zdania „Pisanie pracy zaliczeniowej":\\
+      id: 1,\\
+      text: Pisanie,\\
+      lemma: pisać,\\
+      upos: NOUN,\\
+      xpos: ger:sg:nom:n:imperf:aff,\\
+      feats: Aspect=Imp|Case=Nom|Gender=Neut|Number=Sing|Polarity=Pos|VerbForm=Vnoun,\\
+      head: 0,\\
+      deprel: root,\\
+      misc: start\_char=0|end\_char=7\\\\
 
-%\end{example}
+      id: 2,\\
+      text: pracy,\\
+      lemma: praca,\\
+      upos: NOUN,\\
+      xpos: subst:sg:gen:f,\\
+      feats: Case=Gen|Gender=Fem|Number=Sing,\\
+      head: 1,\\
+      deprel: nmod,\\
+      misc: start\_char=8|end\_char=13\\
 
-%Twierdzenie \ref{Pitagoras} jest bardzo ciekawe.
+      id: 3,\\
+      text: zaliczeniowej,\\
+      lemma: zaliczeniowy,\\
+      upos: ADJ,\\
+      xpos: adj:sg:gen:f:pos,\\
+      feats: Case=Gen|Degree=Pos|Gender=Fem|Number=Sing,\\
+      head: 2,\\
+      deprel: amod,\\
+      misc: start\_char=14|end\_char=27\\
 
-%\begin{theorem}[Twierdzenie Pitagorasa]\label{Pitagoras}
-%Niech będzie dany trójkąt prostokątny o przyprostokątnych długości $a$ i $b$ oraz przeciwprostokątnej długości $c$. Wówczas
-%$$
-%a^2 + b^2 = c^2.
-%$$
-%\end{theorem}
+Bazując na powyższym pakiecie oraz liście polskich stopwords, przygotowano nową wersję tesktów przemówień, która: \begin{itemize}
+\item nie zawiera znaków interpunkcyjnych,
+\item składa się z lematów słów
+\item nie zawiera słów z listy stopwords (lista rozszerzona o \textit{zł, pkt, art, ustawy, r}).
+\end{itemize}
 
-%\begin{proof}
-%Dowód został zaprezentowany w \cite{Ktos} oraz \cite{Innyktos}. Czyli w sumie mogę napisać, że w %\cite{Ktos, Innyktos}. Albo że łatwo pokazać.
-%\end{proof}
+Po wykonaniu lematyzacji przemówień, liczba różnych słów w korpusie spadła z 367 tys. do 152 755 czyli ponad o połowę. Nieco ponad 101 tys. słów występuje mniej niż 5 razy.
+Najczęściej występujące słowa przedstawione są w tabeli \ref{tab:najcz}.
+\begin{table}[h] \centering
+\begin{tabular}{|c|c|} 
+\hline
+'prawo' & 221 153 \\ \hline
+ 'komisja' & 227 835 \\ \hline
+ 'minister' & 236 987 \\ \hline
+ 'móc' & 241 134 \\ \hline
+ 'polski' & 245 334 \\ \hline
+ 'państwo' & 261 503 \\ \hline
+ 'projekt' & 310 992 \\ \hline
+ 'rok' & 392 826 \\ \hline
+ 'mieć' & 521 144 \\ \hline
+ 'ustawa' & 531 702 \\ \hline \end{tabular} \caption{Najczęściej występujące słowa po lematyzacji} \label{tab:najcz}
+\end{table}
 
-%\begin{corollary}
-%Doszedłem do jakiegoś wniosku i daję temu wyraz.
-%\end{corollary}
-
-
-
-
-%\begin{remark}
-%Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumyeirmod tempor invidunt ut %labore et dolore magna aliquyam erat, sed diamvoluptua. At vero eos et accusam et justo duo dolores %et ea rebum.
-%\end{remark}
-
-%\begin{lemma}[Lemacik]
-%Ten lemat jest nie na temat.
-%\end{lemma}
-%\begin{proof} Dowód przez indukcję.
-%\end{proof}
-
-
-%Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumyeirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diamvoluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumyeirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diamvoluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
-
-
-
-%\section{Tabele i rysunki}
-
-%\begin{table}% Koniecznie label po caption, inaczej jest zła numeracja
-%\caption[Opis skrócony]{Opcje dodatkowe dla tabel i rysunków}
-%\label{opcje}
-%\centering
-%\begin{tabular}{|c|p{0.8\textwidth}|}
-%\hline
-%symbol opcji & efekt \\ \hline
-%\texttt{h} & bez przemieszczenia, dokładnie w miejscu użycia (uzyteczne w odniesieniu do niewielkich wstawek); raczej niestosowane \\
-%\texttt{t} & na górze strony; stosowane najczęściej \\
-%\texttt{b} & na dole strony \\
-%\texttt{p} & na stronie zawierającej wyłącznie wstawki \\
-%\texttt{!} & ignorując większość parametrów kontrolujacych umieszczanie wstawek, przekroczenie %wartosci, których może nie pozwolić na umieszczanie nastepnych wstawek na stronie \\ \hline
-%\end{tabular}
-%\end{table}
-
-%W tablicy \ref{opcje} znajdują się opcje dodatkowe otoczeń \texttt{table} i \texttt{figure}.
-
-%\begin{figure}[h!]
-
-%\begin{center}
-%    \setlength{\unitlength}{1mm}
-%
-%    \begin{picture}(40, 30)
-%        \put(20,1){\line(0,1){20}} % linia
-%
-%        % dół
-%        \put(20,1){\circle*{2}}
-%        \put(25,1){0}
-%
-%        % góra
-%        \put(20,21){\circle*{2}}
-%        \put(25,21){1}
-%    \end{picture}
-
-%\end{center}
-%\caption{Przykładowy rysunek, który można wygenerować w \LaTeX -u}
-%\end{figure}
-
-
-%Lorem ipsum dolor sit amet, consetetur sadipscing elit, sed diam nonumyeirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diamvoluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumyeirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diamvoluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
-
-
-
-
-%\chapter{Następny rozdział}
-
-%Lorem ipsum dolor sit amet, consetetur sadipscing elit, sed diam nonumyeirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diamvoluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumyeirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diamvoluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
-
-
-%\section{Macierze}
-
-%Prosta macierz:
-%\[
-%\begin{matrix}
-%a & b & c & d \\
-%d & e & f & g \\
-%1 & 1 & 1 & 1
-%\end{matrix}
-%\]
-%Macierz z nawiasami okrągłymi:
-%\[
-%A = 
-%\begin{pmatrix}
-%a & b & c & d \\
-%d & e & f & g \\
-%1 & 1 & 1 & 1
-%\end{pmatrix}
-%\]
-%Macierz z nawiasami kwadratowymi:
-%\[
-%\begin{bmatrix}
-%a & b & c & d \\
-%d & e & f & g \\
-%1 & 1 & 1 & 1
-%\end{bmatrix}
-%\]
-%Można też ogólniejsze środowisko:
-%\[
-%\renewcommand{\arraystretch}{0.8}
-%\begin{array}{ccc}
-%1 & 0 & 0 \\
-%0 & 1 & 0 \\
-%0 & 0 & 1 \\
-%\end{array}
-%\]
-%Nawiasy klamrowe:
-%\[
-%\left\{
-%\renewcommand{\arraystretch}{0.8}
-%\begin{array}{ccc}
-%1 & 0 & 0 \\
-%0 & 1 & 0 \\
-%0 & 0 & 1 \\
-%\end{array}\right\}
-%\]
-
-%\begin{definition}
-%Niech $A\neq \emptyset$, $n \in \mathbb{N}$. Każde przekształcenie $f:A^n \rightarrow A$ nazywamy \textit{$n$-arną operacją} lub \textit{działaniem} określonym na $A$.
-%0-arne operacje to wyróżnione stałe.
-%\end{definition}
-
-
-%\begin{definition}[Algebra]
-%Parę uporządkowaną $(A,F)$, gdzie $A\neq \emptyset$ jest zbiorem, a $F$ jest rodziną operacji określonych na $A$, nazywamy \textit{algebrą} (lub \textit{$F$-algebrą}). Zbiór $A$ nazywa się \textit{zbiorem elementów}, \textit{nośnikiem} lub \textit{uniwersum} algebry $(A,F)$, a $F$ \textit{zbiorem operacji elementarnych}.
-%\end{definition}
-
-%\begin{proposition}
-%Stwierdzam więc ostatnio, że doszedłszy do granicy, pozostaje mi tylko przy tej granicy biwakować albo zawrócić, możliwie też szukać przejścia czy wyjścia na nowe obszary.
-%\end{proposition}
 
 
 %--------------------- 06. BIBLIOGRAFIA ---------------------------------------------------------------------
@@ -546,37 +735,9 @@ Po tym etapie czyszczenia w bazie pozostało 272 217 fragmentów przemówień, z
 \begin{thebibliography}{25}%jak ktoś ma więcej książek, to niech wpisze większą liczbę
 % \bibitem[numerek]{referencja} Autor, \emph{Tytuł}, Wydawnictwo, rok, strony
 % cytowanie: \cite{referencja1, referencja 2,...}
-\bibitem{LR} R.J.A.Little, D.B.Rubin, \textit{Statistical Analysis With Missing Data}, Wiley Series in Probability and Statistics, 2002
-\bibitem{JRQ} J.R. Quinlan, \textit{Induction of Decision Trees}, Machine Learning 1: Kluwer Academic Publishers, Boston 1986
-\bibitem{BFOS} L.Breiman, J.H.Friedman, Richard A.Olshen, C.J.Stone, \textit{Classification and Regression Trees}, Chapman and Hall CRC, 1984
-\bibitem{JWG} John W.Graham, \textit{Missing Data: Analysis and Design}, Springer, 2012
-\bibitem{PC} P.Cichosz, \textit{Systemy uczące się}, Wydawnictwo Naukowo-Techniczne, Warszawa 2007
-\bibitem{KC} J.Koronacki, J.Ćwik, \textit{Statystyczne systemy uczące się}, Wydawnictwo Naukowo-Techniczne, Warszawa 2005
-\bibitem{FLMT} I.Fortes, L.Mora-Lopez, R.Morales, F.Triguero, \textit{Inductive learnings models with missing values}, Mathematical and Computer Modelling 44,2006, str.790-806
-\bibitem{STP} Maytal Saar-Tsechansky, Foster Provost, \textit{Handling Missing Values when Applying Classsification Models}, Journal of Machine Learning Research 8, 2007, str.1625-1657
-\bibitem{AA} Alan C. Acock, \textit{Working With Missing Values}, Journal of Marriage and Family 67, Listopad 2005, str.1012-1028
-\bibitem{ZQLS} S.Zhang, Z.Qin, C.X.Ling, S.Sheng, \textit{Missing is Usefull: Missing Values in Cost-Sensitive Decision Trees}, IEEE Transactions on Knowledge and Data Enginiering, Vol.17, No.12, Grudzień 2005 
-\bibitem{TJH} B.E.T.H.Twala, M.C.Jones, D.J.Hand, \textit{Good methods for coping with missing data in decision trees}, Pattern Recognition Letters 29, 2008, str.950-956
-\bibitem{SO} J.L.Shafer, M.K.Olsen, \textit{Multiple imputation for multivariate missing-data problems: a data analyst's perspective}, Marzec, 1998 
-\bibitem{XSCH} Y.Xiao, R.Song, M.Chen, H.I.Hall, \textit{Direct and Unbiased Muliple Imputation Methods for Missing Values of Categorical Variables},Journal of Data Science 10, 2012, str.465-481
-\bibitem{PSP} F.Z.Poleto, J.M.Singer, C.D.Paulin, \textit{Missing data mechanisms and their implications on the analysis of categorical data}, Springer Science and Business Media, 2009
-%\bibitem{LL} S.M.Lynch copyright by Scott M. Lynch March 2003 
-\bibitem{PP} T.D.Pigott, \textit{A Review of Methods for Missing Data}, Educational Reserch and Evaluation Vol.7,No.4 , 2001, str.353-383
-\bibitem{YY} Y.C.Yuan, \textit{Multiple Imputation for Missing Data: Concepts and New Development}, SAS Institute Inc., Rockville
-\bibitem{WW} G.I.Webb \textit{The Problem of Missing Values in Decision Tree Grafting}, Department Of Mathematics and Computer Science University of Braunschweig, str.273-283
-\bibitem{JLWZ} L.Jiang, C.Li, J.Wu, J.Zhu, \textit{A Combined Classification Algorithm Based on C4.5 and NB}, str.350-359
-\bibitem{BGK} C.Borgelt, J.Gebhardt, R.Kruse, \textit{Concepts for Probabilistic and Possibilistic Induction of Decision Trees on Real World Data}
-\bibitem{HSS} L.Hawarah, A.Simonet, M.Simonet, \textit{Dealing with Missing Values in a Probabilistic Decision Tree during Classification}, Institut d'Ingenierie et de l'Information de Sante Facul'e de Medecine 
-\bibitem{KK} S.B.Kotsiantis, \textit{Decision trees: a recent overview}, Springer Science and Business Media B.V., 2011
-\bibitem{NIH} M.L.Wallace, S.J.Anderson, S.Mazumdar, \textit{A stochastic multiple imputation algorithm for missing covariatedata in tree-structured survival analysis}, National Institutes of Health, Author Manuscript, December 2011, str.3004-3016
-\bibitem{COHEN} J.Cohen, P.Cohen, S.G.West, L.S.Aiken, \textit{Applied Multiple Regression/Correlation Analysis for the Behavioral Sciences, Third Edition}, Lawrence Erlbaum Associates Publishers, 2003 
-\bibitem{AF} A.Feelders, \textit{Handling missing data in trees: surrogate splits or statistical imputation?}, Tilburg University CentER for Economic Research, 1999
-\bibitem{BM} G.E.Batista, M.C.Monard, \textit{An Analysis of Four Missing Data Treatment Methods for Supervised Learning}, University of Sao Paulo, 2003
-\bibitem{DS} Y.Ding, J.S.Simonoff, \textit{An Investigation of Missing Data Methods for Classification Trees Applied to Binary Response Data}, Journal of Machine Learning Research (11), 2010, str.131-170
-\bibitem{MS} M.Stone, \textit{Cross-validatory choice and assessment of statistical predictions}, Journal of the Royal Statistical Society B 36, 1974, str.111–147
-\bibitem{SV} A.Svinivasan, \textit{Note on the location of optimal classifiers in ndimensional ROC space}, Technical Report PRG-TR-2-99, Oxford University Computing Laboratory, Oxford, 1999 
-\bibitem{PD} F.Provost, P.Domingos, \textit{Well-trained PETs: Improving probability estimation trees}, Stern School of Business, New York University, 2001 
-\bibitem{FS} L.A.Zadeh, \textit{Fuzzy sets}, Information and control 8, str.338-353, 1965 
+\bibitem{C} Peter Hancox, \textit{A brief history of Natural Language Processing}, \url{https://www.cs.bham.ac.uk/~pjh/sem1a5/pt1/pt1_history.html}, dostęp 14.05.2020r.
+\bibitem{C} National Research University Higher School of Economics, \textit{Natural Language Processing}, \url{https://www.coursera.org/learn/language-processing/home/info}
+%\bibitem{JRQ} J.R. Quinlan, \textit{Induction of Decision Trees}, Machine Learning 1: Kluwer Academic Publishers, Boston 1986
 
 \end{thebibliography}
 
@@ -584,19 +745,7 @@ Po tym etapie czyszczenia w bazie pozostało 272 217 fragmentów przemówień, z
 \pagenumbering{gobble}
 
 
-% --- 7. Wykaz symboli i skrótów - jeśli nie ma, zakomentować
-%\chapter*{Wykaz symboli i skrótów}
-
-%\begin{tabular}{cl}
-%nzw. & nadzwyczajny \\
-%* & operator gwiazdka \\
-%$\widetilde{}$ & tylda
-%\end{tabular}
-%\\
-%Jak nie występują, usunąć.
-%\thispagestyle{empty}
-
-% ----- 8. Spis rysunków - jeśli nie ma, zakomentować --------
+% ----- 8. Spis rysunków - 
 \listoffigures
 \thispagestyle{empty}
 %Jak nie występują, usunąć.
@@ -609,20 +758,13 @@ Po tym etapie czyszczenia w bazie pozostało 272 217 fragmentów przemówień, z
 %Jak nie występują, usunąć.
 
 
-% 10. Spis załączników - jak nie ma załączników, to zakomentować lub usunąć
+% 10. Spis załączników - 
 
-\chapter*{Spis załączników}
-\begin{enumerate}
-\item 00\_Kod\_sterujacy.R
-\item 01\_Funkcje\_pomocnicze\_pakiety.R
-\item 02\_Funkcje\_metoda\_surrogate\_splits.R
-\item 03\_Funkcje\_metoda\_fractional\_instances.R
-\item 04\_Wczytywanie\_zbiorow.R
-\item 05\_Wybor\_parametrow\_drzewa.R
-\item 06\_Symulowanie\_brakow\_danych.R
-\item 07\_Badania\_wyniki.R
-\item 08\_Rysowanie\_wykresow.R
-\end{enumerate}
+%\chapter*{Spis załączników}
+%\begin{enumerate}
+%\item kody\autor.sql
+
+%\end{enumerate}
 \thispagestyle{empty}
 
 
