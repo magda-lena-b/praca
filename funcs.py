@@ -64,3 +64,10 @@ def rem_nasty(r):
     else:
         return r
 
+
+def print_topics(topic_list):
+    '''Prints topics and characteristic words for them as a table'''
+    topic_df = pd.DataFrame()
+    for topic in topic_list:
+        topic_df['Topic ' + str(topic[0])] = pd.Series(topic[1].split(' + ')).apply(lambda x : re.sub(r'[\d\.\*\"\']', '', x))
+    return topic_df
