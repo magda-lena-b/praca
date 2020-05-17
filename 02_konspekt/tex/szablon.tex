@@ -315,8 +315,9 @@ W rozdziale czwartym opisano rezultaty otrzymane podczas pracy z modelami n-gram
 
 %---------------------------Rozdzial 2
 \chapter{Podstawowe elementy i zagadnienia związane z procesowaniem języka naturalnego}
+Procesowanie języka naturalnego jest bardzo obszerną dziedziną data science. Pokrywa szeroką gamę zagadnień rozpoczynając od najprostszych typu przewidywanie kolejnego słowa przy pisaniu SMSów na telefonie, po interpretację tekstu oraz tłumaczenie maszynowe. To właśnie zagadnienia związane z tłumaczeniem były tematem pierwszych projektów w obszarze NLP już w latach pięćdziesiątych XX wieku. \\
+Podstawowe elementy przygotowywania danych do analiz związanych z przetwarzaniem języka naturalnego to:
 
-Procesowanie języka naturalnego jest bardzo szeroką dziedziną data science. Pokrywa gamę zagadnień rozpoczynając od najprostszych typu Podstawowe elementy przygotowywania danych do analiz związanych z przetwarzaniem języka naturalnego to:
 \begin{itemize}
  \item tokenizacja, czyli podział tekstu na segmenty, najczęściej pojedyncze słowa,
  \item stemming ma na celu obcięcie wszystkich przyrostków i przedrostów aby zbliżyć słowo do podstawowej postaci,
@@ -725,6 +726,65 @@ Najczęściej występujące słowa przedstawione są w tabeli \ref{tab:najcz}.
  'ustawa' & 531 702 \\ \hline \end{tabular} \caption{Najczęściej występujące słowa po lematyzacji} \label{tab:najcz}
 \end{table}
 
+%-------------------------------------------------- przypisanie sentymentu
+\section{Przypisanie sentymentu} \label{section:sent}
+
+
+
+
+
+
+
+%--------------------------------------------------modelowanie tematyczne
+
+\chapter{Modelowanie tematyczne}
+
+
+
+Modelowanie tematyczne (ang. \textit{topic modeling}) jest dziedziną, która skupia się na wykrywaniu tematów w zbiorze dokumentów. Bazuje na stowarzyszeniu określonych słów z tymi tematami. To zagadnienie może występować jako przykład uczenia nadzorowanego. Będzie tak w przypadku, gdy posiadamy zestaw dokumentów z przypisanymi do nich tematami. Wówczas staramy się zbudować model, który nauczy się rozpoznawać te tematy w nowych dokumentach. Z uczeniem nienadzorowanym mamy do czynienia w przypadku, gdy dopiero chcemy odkryć strukturę danego zestawu dokumentów. Nie wiemy jakie tematy mogą się tam pojawiać i stosujemy różne narzędzia statystyczne aby je zidentyfikować.
+Jednym z podejść, które można zastosować w takiej analizie jest schemat \textit{tf-idf} (od ang. \textit{term frequency – inverse document frequency}). Polega on na redukcji wymiarowości zbioru danych poprzez konstrukcję macierzy, w której dla każdego dokumentu w~zbiorze przypisujemy wektor bazujący na częstościach występowania w nim określonych słów. Wartość TF-IDF oblicza się ze wzoru:
+
+\begin{equation} 
+(tf -idf)_{i,j} =tf_{i,j} \times idf_{i},
+\end{equation}
+gdzie $tf_{i, j}$ oznacza „term frequency” i wyraża się wzorem:
+\begin{equation}
+tf_{i,j} =\frac {n_{i,j}}{\sum _{k}n_{k,j}},
+\end{equation}
+gdzie: $n_{i,j}$ jest liczbą wystąpień słowa $w_{i}$ w dokumencie $d_{j}$ a mianownik jest sumą liczby wystąpień wszystkich słów w dokumencie $d_{j}$. $idf_{i}$ to „inverse document frequency” wyrażana wzorem:
+\begin{equation}
+idf_{i} =\log \frac {|D|}{|\{d:w_{i}\in d\}|},
+\end{equation}
+gdzie: \\
+$|D|$ – liczba dokumentów w korpusie,\\
+$|\{d:w_{i}\in d\}|$ – liczba dokumentów zawierających przynajmniej jedno wystąpienie danego słowa.\\
+Otrzymujemy w ten sposób wektory równych długości, które można wykorzystać do analizy podobieństwa dokumentów. Algorytm ten jest stosowany m.in. w wyszukiwarkach internetowych oraz systemach antyplagiatowych. \\
+Aby zaadresować potrzebę jeszcze większej redukcji wymiarów, pojawiły się inne metody opisywania dokumentów. Jedną z popularniejszych jest latent Dirichlet allocatioc (LDA) przedstawiona w \cite{LDA}. Zakłada, że każdy dokument jest mieszanką różnych ukrytych (\textit{latent}) tematów i dla każdego tematu istnieje rozkład prawdopodobieństwa słów w nim występujących.\\
+Proces generatywny dla dokumentów, zgodnie z LDA wygląda w następujący sposób (z pewnymi uproszczeniami):
+\begin{enumerate}
+\item Wybierz $N \sim Poisson(\xi)$.
+\item Wybierz $\theta \sim Dir(a)$.
+\item Dla każdego z $N$ słów $w_n$:
+\begin{enumerate}
+	\item Wybierz temat $z_n \sim$  Multinomial($\theta$).
+	\item Wybierz słowo $w_n$ z rozkładu wielomianowego zależnego od tematu $z_n$, tj. $p(w_n|z_n;\beta)$.
+\end{enumerate} \end{enumerate}
+Zmienną $\theta$ należy utożsamiać z pewnym podziałem dokumentu na tematy. Przykładowo jeśli rozważamy trzy tematy, może ona przybrać wartość (0.5, 0.2, 0.3). Oznacza to, że połowa słów powinna być związania z tematem nr 1, 20\% z tematem nr 3 i 30\% z tematem 3. Gęstość $k$-wymiarowej zmiennej losowej o rozkłądzie Dirichleta opisuje wzór:
+\begin{equation}
+p(\theta|\alpha) = \frac {\Gamma (\sum_{i=1}^{k}\alpha_i)} {\prod_{i=1}^{k}\Gamma(\alpha_i)} \theta_1^{\alpha_1 -1} \dots \theta_k^{\alpha_k -1},
+\end{equation}
+gdzie $\alpha$ jest $k$-wymiarowym wektorem z parametrami $\alpha_i$>0, a $\Gamma$ oznacza funkcję Gamma.\\
+Wówczas prawdopodobieństwo całego korpusu $D$ o liczbie dokumentów $M$ wynosi:
+
+\begin{equation}
+p(D|\alpha,\beta) = \prod_{d=1}^M \int p(\theta_d |\alpha) \left(\prod_{n=1}^{N_d} \sum_{z_{dn}} p(z_{dn}|\theta_d)p(w_{db}|z_{dn}, \beta) \right) d\theta_d.
+ \end{equation}
+Warto zauważyć, że parametry $\alpha$ i $\beta$ są właściwe dla całego korpusu. Parametr $\theta_d$ jest losowany dla każdego dokumentu, a zmienne $z_{dn}$ i $w_{dn}$ występują na poziomie słów.
+
+Wybór optymalnej liczby tematów:
+https://www.machinelearningplus.com/nlp/topic-modeling-gensim-python/#17howtofindtheoptimalnumberoftopicsforlda
+\section{Author-topic model}
+
 
 
 %--------------------- 06. BIBLIOGRAFIA ---------------------------------------------------------------------
@@ -735,8 +795,9 @@ Najczęściej występujące słowa przedstawione są w tabeli \ref{tab:najcz}.
 \begin{thebibliography}{25}%jak ktoś ma więcej książek, to niech wpisze większą liczbę
 % \bibitem[numerek]{referencja} Autor, \emph{Tytuł}, Wydawnictwo, rok, strony
 % cytowanie: \cite{referencja1, referencja 2,...}
-\bibitem{C} Peter Hancox, \textit{A brief history of Natural Language Processing}, \url{https://www.cs.bham.ac.uk/~pjh/sem1a5/pt1/pt1_history.html}, dostęp 14.05.2020r.
-\bibitem{C} National Research University Higher School of Economics, \textit{Natural Language Processing}, \url{https://www.coursera.org/learn/language-processing/home/info}
+\bibitem{BH} Peter Hancox, \textit{A brief history of Natural Language Processing}, \url{https://www.cs.bham.ac.uk/~pjh/sem1a5/pt1/pt1_history.html}, dostęp 14.05.2020r.
+\bibitem{NRU} National Research University Higher School of Economics, \textit{Natural Language Processing}, \url{https://www.coursera.org/learn/language-processing/home/info}
+\bibitem{LDA} David M. Blei, Andrew Y. Ng and Michael I. Jordan, \textit{Latent Dirichlet Allocation}, Journal of Machine Learning Research 3 (2003) 993-1022
 %\bibitem{JRQ} J.R. Quinlan, \textit{Induction of Decision Trees}, Machine Learning 1: Kluwer Academic Publishers, Boston 1986
 
 \end{thebibliography}
