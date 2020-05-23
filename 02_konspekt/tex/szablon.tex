@@ -781,8 +781,45 @@ p(D|\alpha,\beta) = \prod_{d=1}^M \int p(\theta_d |\alpha) \left(\prod_{n=1}^{N_
  \end{equation}
 Warto zauważyć, że parametry $\alpha$ i $\beta$ są właściwe dla całego korpusu. Parametr $\theta_d$ jest losowany dla każdego dokumentu, a zmienne $z_{dn}$ i $w_{dn}$ występują na poziomie słów.
 
-Wybór optymalnej liczby tematów:
-https://www.machinelearningplus.com/nlp/topic-modeling-gensim-python/#17howtofindtheoptimalnumberoftopicsforlda
+\section{Latent Dirichlet Allocation na badanym korpusie}
+Do analiz związanych z analizą tematu wykorzystano pythonową bibliotekę gensim. 
+Aby uzyskać listę tematów obecnych w badanych dokumentach w pierwszej kolejności należy przygotować słownik zawierający wszystkie słowa z badanego korpusu. Tę operację wykorzystujemy na maksymalnie oczyszczonych danych. Funkcja \textit{ gensim.corpora.Dictionary} buduje słownik mapowań konkretnych słów na ich liczbowe odpowiedniki oraz informację o tym ile razy dane słowo występuję w dokumentach i ile dokumentów je zawiera. Opierając się o te parametry, dobrze jest przefiltrować słownik. Z jednej strony należy usunąć słowa pojawiające się zbyt rzadko, ponieważ nie będą one w stanie określić tematu pojawiającego się w wielu dokumentach, a z drugiej strony trzeba również usunąć te, które pojawiają się zbyt często, aby nie zaburzały konstrukcji tematów.
+Słownik zbudowany na naszym korpusie zawiera przed oczyszczeniem 152 755 elementów. Po zastosowaniu domyślnych parametrów eliminacji słów pozostało 52 425. Domyślne parametru usuwają słowo jeśli pojawia się w mniej niż 5 dokumentach lub w więcej niż połowie z nich.
+Dla tak przygotowanego słownika możemy zamienić dokumenty na format \textit{bag of words} (BoW), to jest zbiór par $(id, licznik\_id)$ wszystkich słów jakie się w nim pojawiają. Przykładowo da wybranego dokumentu, z tego formatu można uzyskać następującą informację:\\
+\textit{Słowo 10 (cywilny) pojawia się 2 razy.\\
+Słowo 11 (czas) pojawia się 1 raz.\\
+Słowo 14 (człowiek) pojawia się 1 raz.\\
+Słowo 38 (istotny) pojawia się 1 raz.\\
+Słowo 50 (kraj) pojawia się 1 raz.\\
+Słowo 62 (musieć) pojawia się 3 razy.\\
+Słowo 64 (myśleć) pojawia się 2 razy.\\
+Słowo 83 (obcy) pojawia się 1 raz.\\
+Słowo 89 (oczywiście) pojawia się 2 razy.\\
+Słowo 99 (okres) pojawia się 1 raz.\\
+Słowo 106 (państwo) pojawia się 4 razy.\\
+Słowo 107 (pewien) pojawia się 4 razy.\\
+Słowo 121 (polityczny) pojawia się 7 razy.}
+
+Następnie możemy przygotować model \textit{tf-idf}, który wyznaczy macierz tych wartości. Zauważmy, że informacje z BoW agregują słowa wyłącznie na poziomie lokalnym, a TF-IDF dodaje do tego wymiar globalny. Sprawdźmy czy modele LDA budowane na tych dwóch zestawach danych będą się od siebie istotnie różnić. Wykorzystamy do tego funkcję \textit{gensim.models.LdaMulticore}. Wywołując tę funkcję możemy określić parametry $num\_topics$ czyli liczbę tematów jakie chcemy określić w naszym korpusie. Domyślna wartość to 100.
+
+Po wywołaniu funkcji z parametrami $ num\_topics=100, passes=1$ otrzymujemy wyniki pokazane na obrazku \ref{tm01}. Wizualizacja prezentuje 10 słów najistotniejszych w określaniu danego tematu. 
+
+\begin{figure}[h] 
+\includegraphics[scale=0.6]{topics01} 
+\centering \label{tm01} \caption{LDA oparte o BOW - 100 tematów}
+\end{figure}
+Niektóre tematy wydają się bardzo precyzyjnie określone np. Topic 0 dotyczy wymiaru sprawiedliwości, Topic 1 podatków, Topic 8 to służba zdrowia a Topic 90 transport. Pojawiają się też tematy „mieszane”, którym trudno opisać np. Topic 2 czy Topic 5. W definicji tematów pojawiają się takie słowa jak „poseł”, „minister”, „polski”, które wydają zbyt pospolite aby dobrze określać poszczególne tematy. Statystyki dla tych słów wyglądają następująco:\\
+Słowo 128 - poseł pojawia się w korpusie 182857 razy i występuje w 66968 dokumentach (42.2\%).\\
+Słowo 60 - minister pojawia się w korpusie 236987 razy i występuje w 77965 dokumentach (49.1\%).\\
+Słowo 123 - polski pojawia się w korpusie 245334 razy i występuje w 73013 dokumentach (46.0\%).\\
+
+Wykonano ponownie proces oczyszczania słownika ze zmianą parametru $no\_above$ na 40\%. Zmieniło to wielkość słownika jedynie o 12 elementów. Zobaczmy czy wpłynęło to na generowane tematy.
+
+
+
+
+\section{Wybór optymalnej liczby tematów}
+%https://www.machinelearningplus.com/nlp/topic-modeling-gensim-python/#17howtofindtheoptimalnumberoftopicsforlda
 \section{Author-topic model}
 
 
@@ -798,6 +835,7 @@ https://www.machinelearningplus.com/nlp/topic-modeling-gensim-python/#17howtofin
 \bibitem{BH} Peter Hancox, \textit{A brief history of Natural Language Processing}, \url{https://www.cs.bham.ac.uk/~pjh/sem1a5/pt1/pt1_history.html}, dostęp 14.05.2020r.
 \bibitem{NRU} National Research University Higher School of Economics, \textit{Natural Language Processing}, \url{https://www.coursera.org/learn/language-processing/home/info}
 \bibitem{LDA} David M. Blei, Andrew Y. Ng and Michael I. Jordan, \textit{Latent Dirichlet Allocation}, Journal of Machine Learning Research 3 (2003) 993-1022
+\bibitem{gensim} Selva Prabhakaran, \textit{Topic Modeling with Gensim (Python)}, \url{https://www.machinelearningplus.com/} dostęp 23/05/2020
 %\bibitem{JRQ} J.R. Quinlan, \textit{Induction of Decision Trees}, Machine Learning 1: Kluwer Academic Publishers, Boston 1986
 
 \end{thebibliography}
