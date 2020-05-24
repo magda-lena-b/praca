@@ -781,7 +781,7 @@ p(D|\alpha,\beta) = \prod_{d=1}^M \int p(\theta_d |\alpha) \left(\prod_{n=1}^{N_
  \end{equation}
 Warto zauważyć, że parametry $\alpha$ i $\beta$ są właściwe dla całego korpusu. Parametr $\theta_d$ jest losowany dla każdego dokumentu, a zmienne $z_{dn}$ i $w_{dn}$ występują na poziomie słów.
 
-\section{Latent Dirichlet Allocation na badanym korpusie}
+\section{Latent Dirichlet Allocation z wykorzystaniem \textit{bag of words}}
 Do analiz związanych z analizą tematu wykorzystano pythonową bibliotekę gensim. 
 Aby uzyskać listę tematów obecnych w badanych dokumentach w pierwszej kolejności należy przygotować słownik zawierający wszystkie słowa z badanego korpusu. Tę operację wykorzystujemy na maksymalnie oczyszczonych danych. Funkcja \textit{ gensim.corpora.Dictionary} buduje słownik mapowań konkretnych słów na ich liczbowe odpowiedniki oraz informację o tym ile razy dane słowo występuję w dokumentach i ile dokumentów je zawiera. Opierając się o te parametry, dobrze jest przefiltrować słownik. Z jednej strony należy usunąć słowa pojawiające się zbyt rzadko, ponieważ nie będą one w stanie określić tematu pojawiającego się w wielu dokumentach, a z drugiej strony trzeba również usunąć te, które pojawiają się zbyt często, aby nie zaburzały konstrukcji tematów.
 Słownik zbudowany na naszym korpusie zawiera przed oczyszczeniem 152 755 elementów. Po zastosowaniu domyślnych parametrów eliminacji słów pozostało 52 425. Domyślne parametru usuwają słowo jeśli pojawia się w mniej niż 5 dokumentach lub w więcej niż połowie z nich.
@@ -811,9 +811,30 @@ Po wywołaniu funkcji z parametrami $ num\_topics=100, passes=1$ otrzymujemy wyn
 Niektóre tematy wydają się bardzo precyzyjnie określone np. Topic 0 dotyczy wymiaru sprawiedliwości, Topic 1 podatków, Topic 8 to służba zdrowia a Topic 90 transport. Pojawiają się też tematy „mieszane”, którym trudno opisać np. Topic 2 czy Topic 5. W definicji tematów pojawiają się takie słowa jak „poseł”, „minister”, „polski”, które wydają zbyt pospolite aby dobrze określać poszczególne tematy. Statystyki dla tych słów wyglądają następująco:\\
 Słowo 128 - poseł pojawia się w korpusie 182857 razy i występuje w 66968 dokumentach (42.2\%).\\
 Słowo 60 - minister pojawia się w korpusie 236987 razy i występuje w 77965 dokumentach (49.1\%).\\
-Słowo 123 - polski pojawia się w korpusie 245334 razy i występuje w 73013 dokumentach (46.0\%).\\
+Słowo 123 - polski pojawia się w korpusie 245334 razy i występuje w 73013 dokumentach (46.0\%).
 
-Wykonano ponownie proces oczyszczania słownika ze zmianą parametru $no\_above$ na 40\%. Zmieniło to wielkość słownika jedynie o 12 elementów. Zobaczmy czy wpłynęło to na generowane tematy.
+Wykonano ponownie proces oczyszczania słownika ze zmianą parametru $no\_above$ na 40\%. Zmieniło to wielkość słownika jedynie o 12 elementów. Wyniki zaprezentowane na rysunku \ref{tm002} sprawiają jednak wrażenie bardziej chaotycznych niż dla poprzedniego zestawu parametrów.
+
+\begin{figure}[h] 
+\includegraphics[scale=0.6]{topics02} 
+\centering \label{tm002} \caption{LDA oparte o BOW - zmiana filtrowania}
+\end{figure}
+
+Wyniki testowano dla kilku zestawów parametrów filtrowania słownika oraz liczby tematów i oceniano subiektywnie pod kątem spójności tematów. Wydaje się, że 20 tematów to zbyt mało aby pokryć pełne spektrum przemówień polskich polityków. Poza subiektywną oceną jakości wygenerowanych tematów istnieje kilka analiz, które mogą pomóc w wyborze optymalnego modelu LDA. W kolejnych podrozdziałach przyjrzymy się kilku z nich.
+
+\section{Koherentność modelu}\label{section:ldacoh}
+Jeśli trenujemy model korzystając z metod uczenia nienadzorowanego, ocena jego jakości może stanowić wyzwanie. Odnosząc to do zagadnienia identyfikacji tematów, musimy spróbować dobrać miarę, która pozwoli nam decydować o tym, jaka liczba tematów jest ‘lepsza’ dla naszego korpusu lub też jak zmiana parametrów treningu wpływa na dopasowanie modelu. Zagadnienie to jest szeroko analizowane w \cite{RTL}. Autorzy wskazują, że w ocenie takich modeli ważna jest zarówno spójność poszczególnych tematów jaki możliwość ich interpretacji przez ludzi. Wygenerowanie zestawu tematów, które kategoryzują dokumenty, ale nie dają się opisać, nie wnosi wartości dodanej do tego zagadnienia. Opisane przez nich badanie porównywały wyniki kilku metod identyfikacji tematów z wynikami otrzymanymi w badaniu z uczestnictwem ludzi. Uczestnicy badania wykonywali dwa zadania. Pierwsze z nich $word intruder$ polegało na wskazaniu niepasującego słowa w podanym zestawie, a drugie $topic intruder$ na wskazaniu tematu, który nie pasował do zaprezentowanego fragmentu dokumentu. Otrzymane wyniki były wykorzystane do oceny spójności słów opisujących tematy zwracane przez model praz poprawność w identyfikacji tematów występujących w danym dokumencie. 
+
+W \cite{COH} autorzy przeanalizowali szereg miar dotyczących oceny koherentności (\textit{ang. coherency}) modeli, które pozwalają ocenić spójność generowanych tematów. Proponują stosowanie miary będącej pewnym układem następujących elementów: \begin{itemize}
+\item metody podziału zestawu słów na podzbiory (segmentation $\mathcal{S}$),
+\item miary, za pomocą której będzie określania spójność wygenerowanych podzbiorów (measures $\mathcal{M}$),
+\item metody określania prawdopodobieństwa słów, które jest wykorzystywane w powyższych miarach ($\mathcal{P}$),
+\item funkcji agregującej otrzymane wyniki ($\Sigma$).
+\end{itemize}
+Pozwala to zdefiniować przestrzeń możliwych configuracji $ C = \mathcal{S} \times \mathcal{M} \times \mathcal{P}$.
+
+\section{Wizualizacja tematów}\label{section:ldavis}
+\section{Rozkład tematów w zbiorze dokumentów}\label{section:ldavis}
 
 
 
@@ -827,7 +848,6 @@ Wykonano ponownie proces oczyszczania słownika ze zmianą parametru $no\_above$
 %--------------------- 06. BIBLIOGRAFIA ---------------------------------------------------------------------
 %------------------------------------------------------------------------------------------------------------
 % Bibliografia leksykograficznie wg nazwisk autorów
-% Dla ambitnych - można skorzystać z BibTeX-a
 
 \begin{thebibliography}{25}%jak ktoś ma więcej książek, to niech wpisze większą liczbę
 % \bibitem[numerek]{referencja} Autor, \emph{Tytuł}, Wydawnictwo, rok, strony
@@ -836,7 +856,8 @@ Wykonano ponownie proces oczyszczania słownika ze zmianą parametru $no\_above$
 \bibitem{NRU} National Research University Higher School of Economics, \textit{Natural Language Processing}, \url{https://www.coursera.org/learn/language-processing/home/info}
 \bibitem{LDA} David M. Blei, Andrew Y. Ng and Michael I. Jordan, \textit{Latent Dirichlet Allocation}, Journal of Machine Learning Research 3 (2003) 993-1022
 \bibitem{gensim} Selva Prabhakaran, \textit{Topic Modeling with Gensim (Python)}, \url{https://www.machinelearningplus.com/} dostęp 23/05/2020
-%\bibitem{JRQ} J.R. Quinlan, \textit{Induction of Decision Trees}, Machine Learning 1: Kluwer Academic Publishers, Boston 1986
+\bibitem{COH} M. Roeder, A. Both and Alexander Hinneburg, \textit{Exploring the Space of Topic Coherence Measures}, WSDM 2015 - Proceedings of the 8th ACM International Conference on Web Search and Data Mining. 399-408.
+\bibitem{RTL} Chang, Jonathan and Sean Gerrish and Wang, Chong and Jordan L. Boyd-graber and David M. Blei, \textit{Reading Tea Leaves: How Humans Interpret Topic Models}, Advances in Neural Information Processing Systems 22, 2009, 288-296
 
 \end{thebibliography}
 
