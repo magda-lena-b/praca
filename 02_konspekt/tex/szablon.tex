@@ -804,43 +804,182 @@ Następnie możemy przygotować model \textit{tf-idf}, który wyznaczy macierz t
 
 Po wywołaniu funkcji z parametrami $ num\_topics=100, passes=1$ otrzymujemy wyniki pokazane na obrazku \ref{tm01}. Wizualizacja prezentuje 10 słów najistotniejszych w określaniu danego tematu. 
 
-\begin{figure}[h] 
-\includegraphics[scale=0.6]{topics01} 
-\centering \label{tm01} \caption{LDA oparte o BOW - 100 tematów}
+\begin{figure}
+\includegraphics[scale=0.6]{topics01}
+\centering  
+\caption{LDA oparte o BOW - 100 tematów}
+\label{tm01}
 \end{figure}
 Niektóre tematy wydają się bardzo precyzyjnie określone np. Topic 0 dotyczy wymiaru sprawiedliwości, Topic 1 podatków, Topic 8 to służba zdrowia a Topic 90 transport. Pojawiają się też tematy „mieszane”, którym trudno opisać np. Topic 2 czy Topic 5. W definicji tematów pojawiają się takie słowa jak „poseł”, „minister”, „polski”, które wydają zbyt pospolite aby dobrze określać poszczególne tematy. Statystyki dla tych słów wyglądają następująco:\\
 Słowo 128 - poseł pojawia się w korpusie 182857 razy i występuje w 66968 dokumentach (42.2\%).\\
 Słowo 60 - minister pojawia się w korpusie 236987 razy i występuje w 77965 dokumentach (49.1\%).\\
 Słowo 123 - polski pojawia się w korpusie 245334 razy i występuje w 73013 dokumentach (46.0\%).
 
-Wykonano ponownie proces oczyszczania słownika ze zmianą parametru $no\_above$ na 40\%. Zmieniło to wielkość słownika jedynie o 12 elementów. Wyniki zaprezentowane na rysunku \ref{tm002} sprawiają jednak wrażenie bardziej chaotycznych niż dla poprzedniego zestawu parametrów.
-
-\begin{figure}[h] 
+\begin{figure}
 \includegraphics[scale=0.6]{topics02} 
-\centering \label{tm002} \caption{LDA oparte o BOW - zmiana filtrowania}
+\centering  
+\caption{LDA oparte o BOW - zmiana filtrowania}
+\label{tm02}
 \end{figure}
+Wykonano ponownie proces oczyszczania słownika ze zmianą parametru $no\_above$ na 40\%. Zmieniło to wielkość słownika jedynie o 12 elementów. Wyniki zaprezentowane na rysunku \ref{tm02} sprawiają jednak wrażenie bardziej chaotycznych niż dla poprzedniego zestawu parametrów.
+
 
 Wyniki testowano dla kilku zestawów parametrów filtrowania słownika oraz liczby tematów i oceniano subiektywnie pod kątem spójności tematów. Wydaje się, że 20 tematów to zbyt mało aby pokryć pełne spektrum przemówień polskich polityków. Poza subiektywną oceną jakości wygenerowanych tematów istnieje kilka analiz, które mogą pomóc w wyborze optymalnego modelu LDA. W kolejnych podrozdziałach przyjrzymy się kilku z nich.
 
 \section{Koherentność modelu}\label{section:ldacoh}
 Jeśli trenujemy model korzystając z metod uczenia nienadzorowanego, ocena jego jakości może stanowić wyzwanie. Odnosząc to do zagadnienia identyfikacji tematów, musimy spróbować dobrać miarę, która pozwoli nam decydować o tym, jaka liczba tematów jest ‘lepsza’ dla naszego korpusu lub też jak zmiana parametrów treningu wpływa na dopasowanie modelu. Zagadnienie to jest szeroko analizowane w \cite{RTL}. Autorzy wskazują, że w ocenie takich modeli ważna jest zarówno spójność poszczególnych tematów jaki możliwość ich interpretacji przez ludzi. Wygenerowanie zestawu tematów, które kategoryzują dokumenty, ale nie dają się opisać, nie wnosi wartości dodanej do tego zagadnienia. Opisane przez nich badanie porównywały wyniki kilku metod identyfikacji tematów z wynikami otrzymanymi w badaniu z uczestnictwem ludzi. Uczestnicy badania wykonywali dwa zadania. Pierwsze z nich $word intruder$ polegało na wskazaniu niepasującego słowa w podanym zestawie, a drugie $topic intruder$ na wskazaniu tematu, który nie pasował do zaprezentowanego fragmentu dokumentu. Otrzymane wyniki były wykorzystane do oceny spójności słów opisujących tematy zwracane przez model praz poprawność w identyfikacji tematów występujących w danym dokumencie. 
 
-W \cite{COH} autorzy przeanalizowali szereg miar dotyczących oceny koherentności (\textit{ang. coherency}) modeli, które pozwalają ocenić spójność generowanych tematów. Proponują stosowanie miary będącej pewnym układem następujących elementów: \begin{itemize}
+W \cite{COH} autorzy przeanalizowali szereg miar dotyczących oceny koherentności (\textit{ang. coherency}) modeli, które pozwalają ocenić spójność generowanych tematów. Proponują stosowanie miary będącej pewnym układem następujących elementów: 
+
+\begin{itemize}
 \item metody podziału zestawu słów na podzbiory (segmentation $\mathcal{S}$),
 \item miary, za pomocą której będzie określania spójność wygenerowanych podzbiorów (measures $\mathcal{M}$),
 \item metody określania prawdopodobieństwa słów, które jest wykorzystywane w powyższych miarach ($\mathcal{P}$),
 \item funkcji agregującej otrzymane wyniki ($\Sigma$).
 \end{itemize}
-Pozwala to zdefiniować przestrzeń możliwych configuracji $ C = \mathcal{S} \times \mathcal{M} \times \mathcal{P}$.
+Pozwala to zdefiniować przestrzeń możliwych configuracji $ C = \mathcal{S} \times \mathcal{M} \times \mathcal{P}$. W tak zdefiniowanej przestrzeni poszukiwano układu najlepiej korelującego z ludzkim osądem. Miara optymalizująca to zagadnienie została oznaczona jako $C_v$ i jest zaimplementowana w pakiecie $gensim$. 
 
-\section{Wizualizacja tematów}\label{section:ldavis}
-\section{Rozkład tematów w zbiorze dokumentów}\label{section:ldavis}
+W kolejnym etapie prac przeprowadzono przeszukiwanie przestrzeni parametrów metodą \textit{grid search}. Parametry, które podlegały zmianie to $no\_above$ (30\%, 40\%, 50\%) w procesie tworzenia słownika, liczba tematów poszukiwanych w korpusie (20, 30, 40, 50) oraz $passes$ (2, 3, 4) czyli liczba iteracji algorytmu budującego tematy. Zapisano wartość $C_v$ dla każdego układu tych parametrów. Otrzymano wartości z zakresu 0.45 - 0.59 a średnia wyniosła 0.53. W tabeli \ref{gs01} zaprezentowano wyniki dla różnych układów parametrów. Aby przyśpieszyć otrzymanie wyniku, modele uczono na połowie zbioru wybranej losowo.
+
+\begin{table}  \centering
+\begin{tabular}{ |p{2cm}||p{2cm}|p{2cm}|p{2cm}|p{2cm}||p{2cm}| }
+ \hline
+      &  \multicolumn{4}{|c||}{liczba tematów} &    \\
+
+ \hline
+ n\_above & 20 & 30 & 40 & 50 & total \\
+ \hline
+0.3	&0.54	&0.55	&0.57	&0.56&	0.56 \\
+0.4	&0.50	&0.52	&0.54	&0.54	&0.53\\
+0.5	&0.47	&0.49	&0.51	&0.52	&0.50\\
+ \hline \hline
+passes & 20 & 30 & 40 & 50 & total \\
+\hline
+2	&0.49	&0.50	&0.52	&0.52	&0.51\\
+3	&0.51	&0.53	&0.54	&0.55	&0.53\\
+4	&0.52	&0.53	&0.56	&0.56	&0.54\\
+\hline \hline
+total &	0.50	&0.52&	0.54	&0.54	&0.53\\
+\hline
+\end{tabular} \caption{Wyniki grid search dla LDA opartego o BOW} \label{gs01}
+\end{table}
+
+Wyniki pokazują, że zwiększanie liczby tematów powyżej 40 nie daje poprawy. Wyższe wartości daje natomiast zwiększanie liczby iteracji oraz obniżanie progu eliminacji słów ze słownika. Wykonano dodatkowe przeszukiwanie dla tych dwóch parametrów (przy ustalonej liczbie 40 tematów) i przedstawiono wyniki w tabeli \ref{gs02}.
+
+
+\begin{table}[h]  \centering
+\begin{tabular}{ |p{2cm}||p{2cm}|p{2cm}|p{2cm}||p{2cm}| }
+ \hline
+      &  \multicolumn{3}{|c||}{passes} &    \\
+ \hline
+ n\_above & 5 & 7 & 10 & total \\
+ \hline
+0.1	&	0.66	& 0.64	&	0.66 & 0.65 \\
+0.2	&	0.62	& 0.62	&	0.62 & 0.62 \\
+
+ \hline 
+
+total &	0.64	& 0.63 &	0.64	&0.64	\\
+
+\hline
+\end{tabular} \caption{Wyniki ponownego grid search dla LDA opartego o BOW} \label{gs02}
+\end{table}
+
+Na podtawie wyników z tabeli \ref{gs02} możemy ocenić, że zwiększanie parametru $passes$ powyżej 5 nie generuje poprawy jakości modelu, ale obniżanie parametru $n\_above$ owszem. Zobaczmy jakie tematy generuje taki zestaw parametrów. Tym razem wytrenowano model na całym zbiorze. Jest wartość $coherence$ wyniosła 0.66. Na rysunku \ref{pic:lda1} zaprezentowano zidentyfikowane tematy. Widać, że kilka wydaje się mocno zbliżonych. W dwóch przypadkach nie udało się opisać tematu jednym słowem.
+
+\begin{figure}
+\includegraphics[scale=0.6]{lda_bow} 
+\centering \caption{LDA oparte o BOW - tematy}
+\label{pic:lda1}
+\end{figure}
+
+
+
+\section{Wizualizacja i rozkład tematów}\label{section:ldavis}
+Wizualizacja modelu może być również bardzo pomocna przy ocenie jego jakości. W pierwszej kolejności zweryfikujmy jak wygląda rozkład tematów w naszym korpusie. Aby to zrobić należy do każdej wypowiedzi przypisać jej główny temat. Model LDA zwraca do każdego dokumentu listę tematów oraz ich score oznaczający na ile ten temat opisuje dany dokument. Na rysunku \ref{top_dist01} przedstawiono rozkład tych tematów w korpusie. Widzimy, że najwięcej dokumentów przypisało się do tematów, które trudno określić jednym słowem. Kolejny na liście to „posiedzenie”. Tym słowem określano temat dotyczący samych obrad, ustaleń i poprawek. Poza tymi, dwa najczęściej się pojawiające się to prawo i administracja. W pozostałych tematach nie widać już ewidentnie wyróżniających się elementów.
+\begin{figure}
+\includegraphics[scale=0.4]{tematy01} 
+\centering \caption{Rozkład tematów w korpusie (LDA BOW)}
+ \label{top_dist01}
+\end{figure}
+
+Przydatnym narzędziem do wizualizacji zidentyfikowanych tematów jest pakiet $pyLDAvis$. Wykorzystuje on algorytm PCA do przedstawienia podobieństwa pomiędzy tematami, tzw. Intertopic Distance Map. Dobrze określona grupa tematów powinna na takiej wizualizacji składać się z kółek podobnej wielkości, które na siebie nie nachodzą w zbyt dużym stopniu. Ponadto prezentowane są słowa najbardziej charakterystyczne dla danego tematu. Wizualizacja modelu opartego o BOW znajduje się na rysunkach \ref{vis01} oraz \ref{vis02}.
+
+\begin{figure}
+\includegraphics[scale=0.5]{vis01} 
+\centering \caption{Wizualizacja modelu z wykorzystaniem pakietu pyLDAvis cz.1}
+ \label{vis01}
+\end{figure}
+
+\begin{figure}
+\includegraphics[scale=0.5]{vis02} 
+\centering \caption{Wizualizacja modelu z wykorzystaniem pakietu pyLDAvis cz.2}
+ \label{vis02}
+\end{figure}
+
+Wnioski wynikające z tej analizy są spójne z dotychczasowymi. Największe tematy to temat "ogólny" oraz temat związany z przeprowadzaniem posiedzeń. Tematy 7, 3 i 12 mocno się zazębiające to tematy związane z prawem karnym, sądownictwem i przepisami.
+
+
+
+\section{Latent Dirichlet Allocation w oparciu o TF-IDF}
+Jak już było wspomniane, słownik typu Bag of Words zawiera parametry słów wyznaczone lokalnie. Parametry $TF-IDF$ dodają do tego wymiar globalny. Warto więc sprawdzić, czy budowa modelu LDA na takich parametrach pozwoli na wyznaczenie lepszego zbioru tematów.
+Dla tego podejścia, analogicznie jak dla Bag Of Words przeszukano przestrzeń parametrów trenowania modelu aby ustalić ich optymalny zestaw. Wyniki różnią się nieco od obserwacji z poprzedniego rozdziału. Najlepszą liczbą tematów wydaje się być 30, chociaż różnice w wartości parametru $coherence$ są niewielkie. Podobnie dla punktu odcięcia $n\_above$. Wyłącznie parametr $passes$ wydaje się różnicować jakość modelu.  Ogółem wartości są stabilniejsze i mniej wrażliwe na wartość parametrów niż dla poprzedniej metody. Nie udało się jednak otrzymać wartości przekraczających 0.6, co się udało poprzednim razem po obniżeniu wartości parametru $n\_above$ do 0.1. Wyniki testów zawarte są w tabeli \ref{tab:gs03}.
+
+
+\begin{table}  \centering
+\begin{tabular}{ |p{2.5cm}||p{1.8cm}|p{1.8cm}|p{1.8cm}|p{1.8cm}|p{1.8cm}||p{1.8cm}| }
+ \hline
+      &  \multicolumn{5}{|c||}{n\_above} &    \\
+
+ \hline
+ liczba tematów & 0.1 & 0.2 & 0.3 & 0.4 & 0.5 & total \\
+ \hline
+30	 & 0.59 & 	0.57 & 	0.58 & 	0.59 & 	0.59 & 	0.58\\
+40	 & 0.57 & 	0.57 & 	0.58 & 	0.57 & 	0.58 & 	0.57\\
+50	 & 0.57 & 	0.57 & 	0.55 & 	0.58 & 	0.56 & 	0.57\\
+ \hline \hline
+passes & 0.1 & 0.2 & 0.3 & 0.4 & 0.5 & total \\
+\hline
+3 & 	0.56 & 	0.55 & 	0.55	 & 0.57	 & 0.56	 & 0.56\\
+5 & 	0.56 & 	0.56 & 	0.57	 & 0.58	 & 0.56 & 	0.57\\
+7 & 	0.59 & 	0.59 & 	0.58	 & 0.59	 & 0.57 & 	0.58\\
+10	 & 0.60 & 	0.58 & 	0.58 & 	0.58	 & 0.61	 & 0.59\\
+\hline \hline
+total &		0.58 & 	0.57	 & 0.57 & 	0.58	 & 0.57 & 	0.57\\
+\hline
+\end{tabular} \caption{Wyniki grid search dla LDA opartego o TF-IDF} 
+\label{tab:gs03}
+\end{table}
+
+Dla tego podejścia, analogicznie jak dla Bag Of Words przeszukano przestrzeń parametrów trenowania modelu aby ustalić ich optymalny zestaw. Wyniki różnią się nieco od obserwacji z poprzedniego rozdziału. Najlepszą liczbą tematów wydaje się być 30, chociaż różnice w wartości parametru $coherence$ są niewielkie. Podobnie dla punktu odcięcia $n\_above$. Wyłącznie parametr $passes$ wydaje się różnicować jakość modelu.  Ogółem wartości są stabilniejsze i mniej wrażliwe na wartość parametrów niż dla poprzedniej metody. Nie udało się jednak otrzymać wartości przekraczających 0.6, co się udało poprzednim razem po obniżeniu wartości parametru $n\_above$ do 0.1. Wyniki testów zawarte są w tabeli \ref{tab:gs03}. Ostateczny model zbudowano z wykorzystaniem parametrów $n\_above=0.1$, 30 jako liczba tematów oraz $passes=10$. Opisywanie tematów wyznaczonych przez taki model było jednak bardziej problematyczne niż w poprzednim przypadku. Mało intuicyjne wydaje się też pojawianie się tematów takich jak „cukier” czy "alkohol" lub aż trzy związane z rolnictwem. Opis tematów znajduje się na rysunku \ref{lda_tf}. Dla trzech tematów nie przypisano żadnej flagi.
+
+Niepokojąco wygląda rozkład korpusu względem tematów (rysunek \ref{top_dist02}). Widać bardzo duże skupienie na jednym głównym temacie i bardzo niski udział innych. Niesatysfakcjonujący podział potwierdza też wizualizacja pyLDAvis (rysunek \ref{vis03}).
+W dlaszej części analiz wykorzystamy wyniki otrzymane z modelu opartego o BOW.
+
+\begin{figure}
+\includegraphics[scale=0.6]{lda_tf} 
+\centering \caption{30 tematów wyodrębionych metodą LDA opartą o TF-IDF}
+ \label{lda_tf}
+\end{figure}
+
+
+\begin{figure}
+\includegraphics[scale=0.5]{tematy02} 
+\centering \caption{Rozkład korpusu względem tematów modelu LDA opartego o TF-IDF}
+ \label{top_dist02}
+\end{figure}
+
+\begin{figure}
+\includegraphics[scale=0.5]{vis03} 
+\centering \caption{Wizualizacja modelu z wykorzystaniem pakietu pyLDAvis}
+ \label{vis03}
+\end{figure}
 
 
 
 
-\section{Wybór optymalnej liczby tematów}
-%https://www.machinelearningplus.com/nlp/topic-modeling-gensim-python/#17howtofindtheoptimalnumberoftopicsforlda
+
+
 \section{Author-topic model}
 
 
@@ -852,7 +991,7 @@ Pozwala to zdefiniować przestrzeń możliwych configuracji $ C = \mathcal{S} \t
 \begin{thebibliography}{25}%jak ktoś ma więcej książek, to niech wpisze większą liczbę
 % \bibitem[numerek]{referencja} Autor, \emph{Tytuł}, Wydawnictwo, rok, strony
 % cytowanie: \cite{referencja1, referencja 2,...}
-\bibitem{BH} Peter Hancox, \textit{A brief history of Natural Language Processing}, \url{https://www.cs.bham.ac.uk/~pjh/sem1a5/pt1/pt1_history.html}, dostęp 14.05.2020r.
+\bibitem{BH} Peter Hancox, \textit{A brief history of Natural Language Processing}, \url{https://www.cs.bham.ac.uk/~pjh/sem1a5/pt1/pt1_history.html}, dostęp 14/05/2020
 \bibitem{NRU} National Research University Higher School of Economics, \textit{Natural Language Processing}, \url{https://www.coursera.org/learn/language-processing/home/info}
 \bibitem{LDA} David M. Blei, Andrew Y. Ng and Michael I. Jordan, \textit{Latent Dirichlet Allocation}, Journal of Machine Learning Research 3 (2003) 993-1022
 \bibitem{gensim} Selva Prabhakaran, \textit{Topic Modeling with Gensim (Python)}, \url{https://www.machinelearningplus.com/} dostęp 23/05/2020
