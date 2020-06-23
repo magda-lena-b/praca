@@ -783,8 +783,8 @@ Warto zauważyć, że parametry $\alpha$ i $\beta$ są właściwe dla całego ko
 
 \section{Latent Dirichlet Allocation z wykorzystaniem \textit{bag of words}}
 Do analiz związanych z analizą tematu wykorzystano pythonową bibliotekę gensim. 
-Aby uzyskać listę tematów obecnych w badanych dokumentach w pierwszej kolejności należy przygotować słownik zawierający wszystkie słowa z badanego korpusu. Tę operację wykorzystujemy na maksymalnie oczyszczonych danych. Funkcja \textit{ gensim.corpora.Dictionary} buduje słownik mapowań konkretnych słów na ich liczbowe odpowiedniki oraz informację o tym ile razy dane słowo występuję w dokumentach i ile dokumentów je zawiera. Opierając się o te parametry, dobrze jest przefiltrować słownik. Z jednej strony należy usunąć słowa pojawiające się zbyt rzadko, ponieważ nie będą one w stanie określić tematu pojawiającego się w wielu dokumentach, a z drugiej strony trzeba również usunąć te, które pojawiają się zbyt często, aby nie zaburzały konstrukcji tematów.
-Słownik zbudowany na naszym korpusie zawiera przed oczyszczeniem 152 755 elementów. Po zastosowaniu domyślnych parametrów eliminacji słów pozostało 52 425. Domyślne parametru usuwają słowo jeśli pojawia się w mniej niż 5 dokumentach lub w więcej niż połowie z nich.
+Aby uzyskać listę tematów obecnych w badanych dokumentach w pierwszej kolejności należy przygotować słownik zawierający wszystkie słowa z badanego korpusu. Tę operację wykorzystujemy na maksymalnie oczyszczonych danych. Funkcja \textit{ gensim.corpora.Dictionary} buduje słownik mapowań konkretnych słów na ich liczbowe odpowiedniki oraz informację o tym ile razy dane słowo występuję w dokumentach i ile dokumentów je zawiera. Opierając się o te parametry, dobrze jest przefiltrować słownik. Z jednej strony należy usunąć słowa pojawiające się zbyt rzadko, ponieważ nie będą one w stanie określić tematu pojawiającego się w wielu dokumentach, a z drugiej strony trzeba również usunąć te, które pojawiają się zbyt często, aby nie zaburzały konstrukcji tematów. Częstą praktyką jest dołożenie do słownika bigramów wygenerowanych w oparciu o korpus, ale z ograniczeniem na częstość występowania.
+Słownik zbudowany w taki sposób na naszym korpusie zawiera przed oczyszczeniem 162 726 elementów. Po zastosowaniu domyślnych parametrów eliminacji słów pozostało 62 004. Domyślne parametru usuwają słowo jeśli pojawia się w mniej niż 5 dokumentach lub w więcej niż połowie z nich.
 Dla tak przygotowanego słownika możemy zamienić dokumenty na format \textit{bag of words} (BoW), to jest zbiór par $(id, licznik\_id)$ wszystkich słów jakie się w nim pojawiają. Przykładowo da wybranego dokumentu, z tego formatu można uzyskać następującą informację:\\
 \textit{Słowo 10 (cywilny) pojawia się 2 razy.\\
 Słowo 11 (czas) pojawia się 1 raz.\\
@@ -810,10 +810,10 @@ Po wywołaniu funkcji z parametrami $ num\_topics=100, passes=1$ otrzymujemy wyn
 \caption{LDA oparte o BOW - 100 tematów}
 \label{tm01}
 \end{figure}
-Niektóre tematy wydają się bardzo precyzyjnie określone np. Topic 0 dotyczy wymiaru sprawiedliwości, Topic 1 podatków, Topic 8 to służba zdrowia a Topic 90 transport. Pojawiają się też tematy „mieszane”, którym trudno opisać np. Topic 2 czy Topic 5. W definicji tematów pojawiają się takie słowa jak „poseł”, „minister”, „polski”, które wydają zbyt pospolite aby dobrze określać poszczególne tematy. Statystyki dla tych słów wyglądają następująco:\\
-Słowo 128 - poseł pojawia się w korpusie 182857 razy i występuje w 66968 dokumentach (42.2\%).\\
-Słowo 60 - minister pojawia się w korpusie 236987 razy i występuje w 77965 dokumentach (49.1\%).\\
-Słowo 123 - polski pojawia się w korpusie 245334 razy i występuje w 73013 dokumentach (46.0\%).
+Niektóre tematy wydają się bardzo precyzyjnie określone np. Topic 89 dotyczy zatrudnienia, Topic 61 rolnictwa, Topic 83 to szkolnictwo a Topic 10 służby porządkowe. Pojawiają się też tematy „mieszane”, którym trudno opisać np. Topic 37. W jego definicji pojawiają się takie słowa jak „osoba”, „państwo” czy „sprawa”, które wydają zbyt pospolite aby dobrze określać poszczególne tematy. Statystyki dla tych słów wyglądają następująco:\\
+Słowo 529 - osoba pojawia się w korpusie 132 022 razy i występuje w 47 402 dokumentach (29.8\%).\\
+Słowo 181 - sprawa pojawia się w korpusie 202 354 razy i występuje w 73 298 dokumentach (46.1\%).\\
+Słowo 107 - państwo pojawia się w korpusie 261 503 razy i występuje w 78 920 dokumentach (49.7\%).
 
 \begin{figure}
 \includegraphics[scale=0.6]{topics02} 
@@ -821,13 +821,10 @@ Słowo 123 - polski pojawia się w korpusie 245334 razy i występuje w 73013 dok
 \caption{LDA oparte o BOW - zmiana filtrowania}
 \label{tm02}
 \end{figure}
-Wykonano ponownie proces oczyszczania słownika ze zmianą parametru $no\_above$ na 40\%. Zmieniło to wielkość słownika jedynie o 12 elementów. Wyniki zaprezentowane na rysunku \ref{tm02} sprawiają jednak wrażenie bardziej chaotycznych niż dla poprzedniego zestawu parametrów.
-
-
-Wyniki testowano dla kilku zestawów parametrów filtrowania słownika oraz liczby tematów i oceniano subiektywnie pod kątem spójności tematów. Wydaje się, że 20 tematów to zbyt mało aby pokryć pełne spektrum przemówień polskich polityków. Poza subiektywną oceną jakości wygenerowanych tematów istnieje kilka analiz, które mogą pomóc w wyborze optymalnego modelu LDA. W kolejnych podrozdziałach przyjrzymy się kilku z nich.
+Wykonano ponownie proces oczyszczania słownika ze zmianą parametru $no\_above$ na 30\%. Zmieniło to wielkość słownika jedynie o kilkadziesiąt elementów. Częściowe wyniki zaprezentowane na rysunku \ref{tm02}. W ocenie zasadności zmiany parametru będziemy chcieli wesprzeć się jednak konkretną miarą.
 
 \section{Koherentność modelu}\label{section:ldacoh}
-Jeśli trenujemy model korzystając z metod uczenia nienadzorowanego, ocena jego jakości może stanowić wyzwanie. Odnosząc to do zagadnienia identyfikacji tematów, musimy spróbować dobrać miarę, która pozwoli nam decydować o tym, jaka liczba tematów jest ‘lepsza’ dla naszego korpusu lub też jak zmiana parametrów treningu wpływa na dopasowanie modelu. Zagadnienie to jest szeroko analizowane w \cite{RTL}. Autorzy wskazują, że w ocenie takich modeli ważna jest zarówno spójność poszczególnych tematów jaki możliwość ich interpretacji przez ludzi. Wygenerowanie zestawu tematów, które kategoryzują dokumenty, ale nie dają się opisać, nie wnosi wartości dodanej do tego zagadnienia. Opisane przez nich badanie porównywały wyniki kilku metod identyfikacji tematów z wynikami otrzymanymi w badaniu z uczestnictwem ludzi. Uczestnicy badania wykonywali dwa zadania. Pierwsze z nich $word intruder$ polegało na wskazaniu niepasującego słowa w podanym zestawie, a drugie $topic intruder$ na wskazaniu tematu, który nie pasował do zaprezentowanego fragmentu dokumentu. Otrzymane wyniki były wykorzystane do oceny spójności słów opisujących tematy zwracane przez model praz poprawność w identyfikacji tematów występujących w danym dokumencie. 
+Jeśli trenujemy model korzystając z metod uczenia nienadzorowanego, ocena jego jakości może stanowić wyzwanie. Odnosząc to do zagadnienia identyfikacji tematów, musimy spróbować dobrać miarę, która pozwoli nam decydować o tym, jaka liczba tematów jest ‘lepsza’ dla naszego korpusu lub też jak zmiana parametrów treningu wpływa na dopasowanie modelu. Zagadnienie to jest szeroko analizowane w \cite{RTL}. Autorzy wskazują, że w ocenie takich modeli ważna jest zarówno spójność poszczególnych tematów jaki możliwość ich interpretacji przez ludzi. Wygenerowanie zestawu tematów, które kategoryzują dokumenty, ale nie dają się opisać, nie wnosi wartości dodanej do tego zagadnienia. Opisane przez nich badanie porównywały wyniki kilku metod identyfikacji tematów z wynikami otrzymanymi w badaniu z uczestnictwem ludzi. Uczestnicy badania wykonywali dwa zadania. Pierwsze z nich \textit{word intruder} polegało na wskazaniu niepasującego słowa w podanym zestawie, a drugie \textit{topic intruder} na wskazaniu tematu, który nie pasował do zaprezentowanego fragmentu dokumentu. Otrzymane wyniki były wykorzystane do oceny spójności słów opisujących tematy zwracane przez model praz poprawność w identyfikacji tematów występujących w danym dokumencie. 
 
 W \cite{COH} autorzy przeanalizowali szereg miar dotyczących oceny koherentności (\textit{ang. coherency}) modeli, które pozwalają ocenić spójność generowanych tematów. Proponują stosowanie miary będącej pewnym układem następujących elementów: 
 
@@ -839,7 +836,7 @@ W \cite{COH} autorzy przeanalizowali szereg miar dotyczących oceny koherentnoś
 \end{itemize}
 Pozwala to zdefiniować przestrzeń możliwych configuracji $ C = \mathcal{S} \times \mathcal{M} \times \mathcal{P}$. W tak zdefiniowanej przestrzeni poszukiwano układu najlepiej korelującego z ludzkim osądem. Miara optymalizująca to zagadnienie została oznaczona jako $C_v$ i jest zaimplementowana w pakiecie $gensim$. 
 
-W kolejnym etapie prac przeprowadzono przeszukiwanie przestrzeni parametrów metodą \textit{grid search}. Parametry, które podlegały zmianie to $no\_above$ (30\%, 40\%, 50\%) w procesie tworzenia słownika, liczba tematów poszukiwanych w korpusie (20, 30, 40, 50) oraz $passes$ (2, 3, 4) czyli liczba iteracji algorytmu budującego tematy. Zapisano wartość $C_v$ dla każdego układu tych parametrów. Otrzymano wartości z zakresu 0.45 - 0.59 a średnia wyniosła 0.53. W tabeli \ref{gs01} zaprezentowano wyniki dla różnych układów parametrów. Aby przyśpieszyć otrzymanie wyniku, modele uczono na połowie zbioru wybranej losowo.
+W kolejnym etapie prac przeprowadzono testy mające na celu ustalenie optymalnego zestawu parametrów do budowy modelu. Parametry, które podlegały zmianie to $no\_above$ (10\%, 20\%, 30\%, 40\%, 50\%) w procesie tworzenia słownika, liczba tematów poszukiwanych w korpusie (20, 30, 40, 50) oraz $passes$ (3, 5, 7, 10) czyli liczba iteracji algorytmu budującego tematy. Zapisano wartość $C_v$ dla każdego układu tych parametrów. Otrzymano wartości z zakresu 0.45 - 0.63 a~ średnia wyniosła 0.55. W tabeli \ref{gs01} zaprezentowano wyniki dla różnych układów parametrów. Aby przyśpieszyć otrzymanie wyniku, modele uczono na zbiorze zawierającym losowo wybrane 30\% korpusu.
 
 \begin{table}  \centering
 \begin{tabular}{ |p{2cm}||p{2cm}|p{2cm}|p{2cm}|p{2cm}||p{2cm}| }
@@ -849,43 +846,25 @@ W kolejnym etapie prac przeprowadzono przeszukiwanie przestrzeni parametrów met
  \hline
  n\_above & 20 & 30 & 40 & 50 & total \\
  \hline
-0.3	&0.54	&0.55	&0.57	&0.56&	0.56 \\
-0.4	&0.50	&0.52	&0.54	&0.54	&0.53\\
-0.5	&0.47	&0.49	&0.51	&0.52	&0.50\\
+0.1	&0.61	&0.61	&0.61	&0.60 	&0.61 \\
+0.2	&0.55	&0.57	&0.58	&0.58	&0.57\\
+0.3	&0.53	&0.53	&0.53	&0.54	&0.53\\
+0.4	&0.48	&0.50	&0.53	&0.52	&0.51\\
  \hline \hline
 passes & 20 & 30 & 40 & 50 & total \\
 \hline
-2	&0.49	&0.50	&0.52	&0.52	&0.51\\
-3	&0.51	&0.53	&0.54	&0.55	&0.53\\
-4	&0.52	&0.53	&0.56	&0.56	&0.54\\
+3	&0.52	&0.52	&0.54	&0.54	&0.53\\
+5	&0.54	&0.55	&0.56	&0.56	&0.55\\
+7	&0.55	&0.57	&0.56	&0.57	&0.56\\
+10	&0.56	&0.56	&0.58	&0.58	&0.57\\
 \hline \hline
-total &	0.50	&0.52&	0.54	&0.54	&0.53\\
+total &	0.54	&0.55	&0.56	&0.56	&0.55\\
 \hline
 \end{tabular} \caption{Wyniki grid search dla LDA opartego o BOW} \label{gs01}
 \end{table}
 
-Wyniki pokazują, że zwiększanie liczby tematów powyżej 40 nie daje poprawy. Wyższe wartości daje natomiast zwiększanie liczby iteracji oraz obniżanie progu eliminacji słów ze słownika. Wykonano dodatkowe przeszukiwanie dla tych dwóch parametrów (przy ustalonej liczbie 40 tematów) i przedstawiono wyniki w tabeli \ref{gs02}.
+Wyniki pokazują, że zwiększanie liczby tematów powyżej 40 nie daje poprawy. Wyższe wartości daje natomiast zwiększanie liczby iteracji oraz obniżanie progu eliminacji słów ze słownika. Najwyższą wartość coherence uzyskano dla poziomu eliminacji 0.1 co oznacza, że w budowie modelu brały udział tylko słowa, które pojawiły się w nie więcej niż 10\% dokumentów. Pojawia się wątpliwość czy tak żadnie słowa mogą dobrze generalizować tematy? Czy tematy wygenerowane w takim modelu łatwo interpretować? Aby odpowiedzieć na to pytanie zbudowano dwa modele na całym korpusie. Jeden z parametrami (n\_above=0.1, passes=10, topics=40) oraz drugi (n\_above=0.2, passes=10, topics=40) i subiektywnie oceniono interpretowalność tematów na podstawie kluczowych słów.
 
-
-\begin{table}[h]  \centering
-\begin{tabular}{ |p{2cm}||p{2cm}|p{2cm}|p{2cm}||p{2cm}| }
- \hline
-      &  \multicolumn{3}{|c||}{passes} &    \\
- \hline
- n\_above & 5 & 7 & 10 & total \\
- \hline
-0.1	&	0.66	& 0.64	&	0.66 & 0.65 \\
-0.2	&	0.62	& 0.62	&	0.62 & 0.62 \\
-
- \hline 
-
-total &	0.64	& 0.63 &	0.64	&0.64	\\
-
-\hline
-\end{tabular} \caption{Wyniki ponownego grid search dla LDA opartego o BOW} \label{gs02}
-\end{table}
-
-Na podtawie wyników z tabeli \ref{gs02} możemy ocenić, że zwiększanie parametru $passes$ powyżej 5 nie generuje poprawy jakości modelu, ale obniżanie parametru $n\_above$ owszem. Zobaczmy jakie tematy generuje taki zestaw parametrów. Tym razem wytrenowano model na całym zbiorze. Jest wartość $coherence$ wyniosła 0.66. Na rysunku \ref{pic:lda1} zaprezentowano zidentyfikowane tematy. Widać, że kilka wydaje się mocno zbliżonych. W dwóch przypadkach nie udało się opisać tematu jednym słowem.
 
 \begin{figure}
 \includegraphics[scale=0.6]{lda_bow} 
@@ -964,7 +943,7 @@ W dlaszej części analiz wykorzystamy wyniki otrzymane z modelu opartego o BOW.
 
 
 \begin{figure}
-\includegraphics[scale=0.5]{tematy02} 
+\includegraphics[scale=0.4]{tematy02} 
 \centering \caption{Rozkład korpusu względem tematów modelu LDA opartego o TF-IDF}
  \label{top_dist02}
 \end{figure}
@@ -981,6 +960,13 @@ W dlaszej części analiz wykorzystamy wyniki otrzymane z modelu opartego o BOW.
 
 
 \section{Author-topic model}
+Pewnym rozszerzeniem modelowania tematycznego jest dodanie do standardowego LDA wymiaru autora. Takie podejście zostało opisane w \cite{ATM}. Polega ono na rozbudowaniu podstawowego modelu o dodatkowe rozkłady związane z zainteresowaniami autora. Pozwala to na precyzyjny statystyczny opis dokumentów, które mają więcej niż jednego autora. Model generatywny w modelu LDA dla każdego słowa wybiera temat z odpowiednim prawdopodobieństwem a następnie losuje słowa z rozkładu właściwego dla tego tematu. Model \textit{author-topic} dodaje dodatkowy krok, gdzie dla każdego słowa w pierwszej kolejności ustalany jest autor. Dla każdego autora istnieje specyficzny rozkład tematów odzwierciedlający jego zainteresowania, dlatego w zależności od wyboru autora w poprzednim kroku, prawdopodobieństwo pojawienia się danego tematu jest inne. Po ustaleniu tematu losowane jest słowo zgodnie z rozkładem właściwym dla niego.
+
+Zastosowania modeli tego typu są bardzo szerokie. Jednym z wymienionych przez autorów \cite{ATM} jest poszukiwanie recenzentów do prac na podstawie abstraktu. Wymaga to policzenia podobieństwa pomiędzy autorami np. za pomocą symetrycznej dywergencji Kullbacka – Leiblera obliczanej dla rozkładów po tematach.
+\begin{equation}
+sKL(I,j) = \sum_{t=1}^T \left[ \theta_{it} \log \frac{\theta_{it}}{\theta_{jt}} + \theta_{jt} \log \frac{\theta_{jt}}{\theta_{it}} \right]
+\end{equation} 
+
 
 
 
@@ -997,7 +983,8 @@ W dlaszej części analiz wykorzystamy wyniki otrzymane z modelu opartego o BOW.
 \bibitem{gensim} Selva Prabhakaran, \textit{Topic Modeling with Gensim (Python)}, \url{https://www.machinelearningplus.com/} dostęp 23/05/2020
 \bibitem{COH} M. Roeder, A. Both and Alexander Hinneburg, \textit{Exploring the Space of Topic Coherence Measures}, WSDM 2015 - Proceedings of the 8th ACM International Conference on Web Search and Data Mining. 399-408.
 \bibitem{RTL} Chang, Jonathan and Sean Gerrish and Wang, Chong and Jordan L. Boyd-graber and David M. Blei, \textit{Reading Tea Leaves: How Humans Interpret Topic Models}, Advances in Neural Information Processing Systems 22, 2009, 288-296
-
+\bibitem{ATM} Michal Rosen-Zvi and Thomas Griffiths and Mark Steyvers and Padhraic Smyth, \textit{The Author-Topic Model for Authors and Documents}, arXiv:1207.4169v1
+\bibitem{SA} Bo Pang and Lillian Lee and Shivakumar Vaithyanathan, \textit{Thumbs Up? Sentiment Classification Using Machine Learning Techniques}, 2002 Proceedings of EMNLP 79-86
 \end{thebibliography}
 
 \thispagestyle{empty}
