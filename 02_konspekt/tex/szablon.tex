@@ -863,11 +863,15 @@ total &	0.54	&0.55	&0.56	&0.56	&0.55\\
 \end{tabular} \caption{Wyniki grid search dla LDA opartego o BOW} \label{gs01}
 \end{table}
 
-Wyniki pokazują, że zwiększanie liczby tematów powyżej 40 nie daje poprawy. Wyższe wartości daje natomiast zwiększanie liczby iteracji oraz obniżanie progu eliminacji słów ze słownika. Najwyższą wartość coherence uzyskano dla poziomu eliminacji 0.1 co oznacza, że w budowie modelu brały udział tylko słowa, które pojawiły się w nie więcej niż 10\% dokumentów. Pojawia się wątpliwość czy tak żadnie słowa mogą dobrze generalizować tematy? Czy tematy wygenerowane w takim modelu łatwo interpretować? Aby odpowiedzieć na to pytanie zbudowano dwa modele na całym korpusie. Jeden z parametrami (n\_above=0.1, passes=10, topics=40) oraz drugi (n\_above=0.2, passes=10, topics=40) i subiektywnie oceniono interpretowalność tematów na podstawie kluczowych słów.
+Wyniki pokazują, że zwiększanie liczby tematów powyżej 40 nie daje poprawy. Wyższe wartości daje natomiast zwiększanie liczby iteracji oraz obniżanie progu eliminacji słów ze słownika. Najwyższą wartość coherence uzyskano dla poziomu eliminacji 0.1 co oznacza, że w budowie modelu brały udział tylko słowa, które pojawiły się w nie więcej niż 10\% dokumentów. Pojawia się wątpliwość czy tak żadnie słowa mogą dobrze generalizować tematy? Czy tematy wygenerowane w takim modelu łatwo interpretować? 
+
+Aby odpowiedzieć na to pytanie zbudowano dwa modele na całym korpusie. Jeden z parametrami (n\_above=0.1, passes=10, topics=40) oraz drugi (n\_above=0.2, passes=10, topics=40) i subiektywnie oceniono interpretowalność tematów na podstawie kluczowych słów. Jako łatwiejszy do opsania wybrano model z paramterem 0.2. Dwa tematy zgrupowano razem jako nie dające sobie przypisać szczególnej etykiety. Model z tymi parametrami zbudowanh na całym korpusie ma coherence równe 0.597.
+
+Na rysunku \ref{pic:lda1} przedstawiono kluczowe słowa dla tematów wraz z opisami.
 
 
 \begin{figure}
-\includegraphics[scale=0.6]{lda_bow} 
+\includegraphics[scale=0.74]{lda_bow} 
 \centering \caption{LDA oparte o BOW - tematy}
 \label{pic:lda1}
 \end{figure}
@@ -875,69 +879,60 @@ Wyniki pokazują, że zwiększanie liczby tematów powyżej 40 nie daje poprawy.
 
 
 \section{Wizualizacja i rozkład tematów}\label{section:ldavis}
-Wizualizacja modelu może być również bardzo pomocna przy ocenie jego jakości. W pierwszej kolejności zweryfikujmy jak wygląda rozkład tematów w naszym korpusie. Aby to zrobić należy do każdej wypowiedzi przypisać jej główny temat. Model LDA zwraca do każdego dokumentu listę tematów oraz ich score oznaczający na ile ten temat opisuje dany dokument. Na rysunku \ref{top_dist01} przedstawiono rozkład tych tematów w korpusie. Widzimy, że najwięcej dokumentów przypisało się do tematów, które trudno określić jednym słowem. Kolejny na liście to „posiedzenie”. Tym słowem określano temat dotyczący samych obrad, ustaleń i poprawek. Poza tymi, dwa najczęściej się pojawiające się to prawo i administracja. W pozostałych tematach nie widać już ewidentnie wyróżniających się elementów.
+
+Wizualizacja modelu może być bardzo pomocna przy ocenie jego jakości. W pierwszej kolejności zweryfikujmy jak wygląda rozkład tematów w naszym korpusie. Aby to zrobić należy do każdej wypowiedzi przypisać jej główny temat. Model LDA zwraca do każdego dokumentu listę tematów oraz ich score oznaczający na ile ten temat opisuje dany dokument. Na rysunku \ref{top_dist01} przedstawiono rozkład tych tematów w korpusie. Widzimy, że najwięcej dokumentów przypisało się do tematów, które trudno było określić jednym słowem i zostały złączene w jeden ogólny. Kolejny na liście to „posiedzenie”. Tym słowem określano temat dotyczący samych obrad, ustaleń i poprawek. Poza tymi, dwa najczęściej się pojawiające się to ustrój państwa, przepisy i bidżet. W pozostałych tematach nie widać już ewidentnie wyróżniających się elementów. Najrzadziej występujące to "kwalifikacje zawodowe" oraz "energia". Można też niestety zauważyć, że tematy związane ze środowiskiem naturlanym poajwiały się bardzo rzadko.
 \begin{figure}
 \includegraphics[scale=0.4]{tematy01} 
 \centering \caption{Rozkład tematów w korpusie (LDA BOW)}
  \label{top_dist01}
 \end{figure}
 
-Przydatnym narzędziem do wizualizacji zidentyfikowanych tematów jest pakiet $pyLDAvis$. Wykorzystuje on algorytm PCA do przedstawienia podobieństwa pomiędzy tematami, tzw. Intertopic Distance Map. Dobrze określona grupa tematów powinna na takiej wizualizacji składać się z kółek podobnej wielkości, które na siebie nie nachodzą w zbyt dużym stopniu. Ponadto prezentowane są słowa najbardziej charakterystyczne dla danego tematu. Wizualizacja modelu opartego o BOW znajduje się na rysunkach \ref{vis01} oraz \ref{vis02}.
+Przydatnym narzędziem do wizualizacji zidentyfikowanych tematów jest pakiet $pyLDAvis$. Wykorzystuje on algorytm PCA do przedstawienia podobieństwa pomiędzy tematami, tzw. Intertopic Distance Map. Dobrze określona grupa tematów powinna na takiej wizualizacji składać się z kółek podobnej wielkości, które na siebie nie nachodzą w zbyt dużym stopniu. Ponadto prezentowane są słowa najbardziej charakterystyczne dla danego tematu. Wizualizacja modelu opartego o BOW znajduje się na rysunku \ref{vis01}.
 
 \begin{figure}
 \includegraphics[scale=0.5]{vis01} 
-\centering \caption{Wizualizacja modelu z wykorzystaniem pakietu pyLDAvis cz.1}
+\includegraphics[scale=0.5]{vis02} 
+\centering \caption{Wizualizacja modelu z wykorzystaniem pakietu pyLDAvis}
  \label{vis01}
 \end{figure}
 
-\begin{figure}
-\includegraphics[scale=0.5]{vis02} 
-\centering \caption{Wizualizacja modelu z wykorzystaniem pakietu pyLDAvis cz.2}
- \label{vis02}
-\end{figure}
-
-Wnioski wynikające z tej analizy są spójne z dotychczasowymi. Największe tematy to temat "ogólny" oraz temat związany z przeprowadzaniem posiedzeń. Tematy 7, 3 i 12 mocno się zazębiające to tematy związane z prawem karnym, sądownictwem i przepisami.
+Wnioski wynikające z tej analizy są spójne z dotychczasowymi. Największe tematy to temat 'ogólny' oraz temat związany z przeprowadzaniem posiedzeń. Temat 40, niemalże zawierający się w 9, to energia i gospodarka odpowiednio.
 
 
 
 \section{Latent Dirichlet Allocation w oparciu o TF-IDF}
 Jak już było wspomniane, słownik typu Bag of Words zawiera parametry słów wyznaczone lokalnie. Parametry $TF-IDF$ dodają do tego wymiar globalny. Warto więc sprawdzić, czy budowa modelu LDA na takich parametrach pozwoli na wyznaczenie lepszego zbioru tematów.
-Dla tego podejścia, analogicznie jak dla Bag Of Words przeszukano przestrzeń parametrów trenowania modelu aby ustalić ich optymalny zestaw. Wyniki różnią się nieco od obserwacji z poprzedniego rozdziału. Najlepszą liczbą tematów wydaje się być 30, chociaż różnice w wartości parametru $coherence$ są niewielkie. Podobnie dla punktu odcięcia $n\_above$. Wyłącznie parametr $passes$ wydaje się różnicować jakość modelu.  Ogółem wartości są stabilniejsze i mniej wrażliwe na wartość parametrów niż dla poprzedniej metody. Nie udało się jednak otrzymać wartości przekraczających 0.6, co się udało poprzednim razem po obniżeniu wartości parametru $n\_above$ do 0.1. Wyniki testów zawarte są w tabeli \ref{tab:gs03}.
+Dla tego podejścia, analogicznie jak dla Bag Of Words przeszukano przestrzeń parametrów trenowania modelu aby ustalić ich optymalny zestaw. Wyniki różnią się nieco od obserwacji z poprzedniego rozdziału. Najlepszą liczbą tematów wydaje się być 20, chociaż różnice w wartości parametru $coherence$ są niewielkie. Podobnie dla punktu odcięcia $n\_above$. Wyłącznie parametr $passes$ wydaje się różnicować jakość modelu. Ogółem wartości są stabilniejsze i mniej wrażliwe na wartość parametrów niż dla poprzedniej metody. Wyniki testów zawarte są w tabeli \ref{tab:gs03}.
 
 
 \begin{table}  \centering
-\begin{tabular}{ |p{2.5cm}||p{1.8cm}|p{1.8cm}|p{1.8cm}|p{1.8cm}|p{1.8cm}||p{1.8cm}| }
+\begin{tabular}{ |p{2.5cm}||p{1.8cm}|p{1.8cm}|p{1.8cm}|p{1.8cm}||p{1.8cm}| }
  \hline
-      &  \multicolumn{5}{|c||}{n\_above} &    \\
+      &  \multicolumn{4}{|c||}{liczba tematów} &    \\
 
  \hline
- liczba tematów & 0.1 & 0.2 & 0.3 & 0.4 & 0.5 & total \\
+n\_above & 20 & 30 & 40 & 50 & total \\
  \hline
-30	 & 0.59 & 	0.57 & 	0.58 & 	0.59 & 	0.59 & 	0.58\\
-40	 & 0.57 & 	0.57 & 	0.58 & 	0.57 & 	0.58 & 	0.57\\
-50	 & 0.57 & 	0.57 & 	0.55 & 	0.58 & 	0.56 & 	0.57\\
+0.2	 & 0.56 & 	0.54 & 	0.54 & 	0.55 & 0.55\\
+0.3	 & 0.54 & 	0.55 & 	0.54 & 	0.56 & 0.55\\
+0.4	 & 0.55 & 	0.55 & 	0.55 & 	0.54 & 0.55\\
  \hline \hline
-passes & 0.1 & 0.2 & 0.3 & 0.4 & 0.5 & total \\
+passes & 20 & 30 & 40 & 50 & total \\
 \hline
-3 & 	0.56 & 	0.55 & 	0.55	 & 0.57	 & 0.56	 & 0.56\\
-5 & 	0.56 & 	0.56 & 	0.57	 & 0.58	 & 0.56 & 	0.57\\
-7 & 	0.59 & 	0.59 & 	0.58	 & 0.59	 & 0.57 & 	0.58\\
-10	 & 0.60 & 	0.58 & 	0.58 & 	0.58	 & 0.61	 & 0.59\\
+3 & 	0.55 & 	0.54 & 	0.52	 & 0.53	 & 0.54	\\
+5 & 	0.54 & 	0.54 & 	0.55	 & 0.55	 & 0.54 \\
+7 & 	0.55 & 	0.54 & 	0.56	 & 0.56	 & 0.55\\
+10 & 0.56 & 	0.56 & 	0.54 & 	0.55	 & 0.55	\\
 \hline \hline
-total &		0.58 & 	0.57	 & 0.57 & 	0.58	 & 0.57 & 	0.57\\
+total &		0.55 & 	0.55	 & 0.54 & 	0.55	 & 0.55\\
 \hline
 \end{tabular} \caption{Wyniki grid search dla LDA opartego o TF-IDF} 
 \label{tab:gs03}
 \end{table}
 
-Dla tego podejścia, analogicznie jak dla Bag Of Words przeszukano przestrzeń parametrów trenowania modelu aby ustalić ich optymalny zestaw. Wyniki różnią się nieco od obserwacji z poprzedniego rozdziału. Najlepszą liczbą tematów wydaje się być 30, chociaż różnice w wartości parametru $coherence$ są niewielkie. Podobnie dla punktu odcięcia $n\_above$. Wyłącznie parametr $passes$ wydaje się różnicować jakość modelu.  Ogółem wartości są stabilniejsze i mniej wrażliwe na wartość parametrów niż dla poprzedniej metody. Nie udało się jednak otrzymać wartości przekraczających 0.6, co się udało poprzednim razem po obniżeniu wartości parametru $n\_above$ do 0.1. Wyniki testów zawarte są w tabeli \ref{tab:gs03}. Ostateczny model zbudowano z wykorzystaniem parametrów $n\_above=0.1$, 30 jako liczba tematów oraz $passes=10$. Opisywanie tematów wyznaczonych przez taki model było jednak bardziej problematyczne niż w poprzednim przypadku. Mało intuicyjne wydaje się też pojawianie się tematów takich jak „cukier” czy "alkohol" lub aż trzy związane z rolnictwem. Opis tematów znajduje się na rysunku \ref{lda_tf}. Dla trzech tematów nie przypisano żadnej flagi.
-
-Niepokojąco wygląda rozkład korpusu względem tematów (rysunek \ref{top_dist02}). Widać bardzo duże skupienie na jednym głównym temacie i bardzo niski udział innych. Niesatysfakcjonujący podział potwierdza też wizualizacja pyLDAvis (rysunek \ref{vis03}).
-W dlaszej części analiz wykorzystamy wyniki otrzymane z modelu opartego o BOW.
-
 \begin{figure}
-\includegraphics[scale=0.6]{lda_tf} 
-\centering \caption{30 tematów wyodrębionych metodą LDA opartą o TF-IDF}
+\includegraphics[scale=0.8]{lda_tf} 
+\centering \caption{20 tematów wyodrębionych metodą LDA opartą o TF-IDF}
  \label{lda_tf}
 \end{figure}
 
@@ -949,10 +944,16 @@ W dlaszej części analiz wykorzystamy wyniki otrzymane z modelu opartego o BOW.
 \end{figure}
 
 \begin{figure}
-\includegraphics[scale=0.5]{vis03} 
+\includegraphics[scale=0.7]{vis03} 
 \centering \caption{Wizualizacja modelu z wykorzystaniem pakietu pyLDAvis}
  \label{vis03}
 \end{figure}
+
+Ostateczny model zbudowano z wykorzystaniem parametrów $n\_above=0.2$, 20 jako liczba tematów oraz $passes=5$. Coherence tego modelu wynosi 0.64, czyli jest wyże niż modelu opartego tylko o BOW. Opis tematów znajduje się na rysunku \ref{lda_tf}. 
+
+Bazując wyłącznie na parametrze coherence wybralibyśmy ten model jako generujący lepsze przypisanie tematów do wystąpień. Jednak wizulana ocena modelu wykazuje bardzo duże skupienie jedynie w 4 z 20 tematów. Udział wielu jest marginalny. Niesatysfakcjonujący podział potwierdza też wizualizacja pyLDAvis (rysunek \ref{vis03}). W dalszych analizach w rozdziale \ref{models} będzie wykorzystywany model oparty o BOW.
+
+
 
 
 
@@ -968,6 +969,18 @@ sKL(I,j) = \sum_{t=1}^T \left[ \theta_{it} \log \frac{\theta_{it}}{\theta_{jt}} 
 \end{equation} 
 
 
+\chapter{Analiza sentymentu}
+
+\section{Przypisanie sentymentu podstawowym słowom}
+
+\section{Przypisanie sentymentu pozostałym słowom}
+
+\section{Sentyment wypowiedzi w czasie oraz w zależności od mówcy i tematu}
+
+
+\chapter{Łączenie dotychczasowych wyników}\label{models}
+
+\section{Sentyment vs temat }
 
 
 %--------------------- 06. BIBLIOGRAFIA ---------------------------------------------------------------------
