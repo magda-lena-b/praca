@@ -968,6 +968,56 @@ Zastosowania modeli tego typu są bardzo szerokie. Jednym z wymienionych przez a
 sKL(I,j) = \sum_{t=1}^T \left[ \theta_{it} \log \frac{\theta_{it}}{\theta_{jt}} + \theta_{jt} \log \frac{\theta_{jt}}{\theta_{it}} \right]
 \end{equation} 
 
+W tej pracy spróbujemy zastosować modelowanie autorów i tematów do porównywania tematyki wypowiedzi posłów oraz partii.
+
+\section{Author-topic model dla posłów}
+W celu analizy podobieństw i różnic pomiędzy tematami pojawiającymi się w wypowiedziach posłów zbudowano model author-topic wykorzystując pakiet \textit{gensim}. Do oczyszczenia słownika zastosowano parametry \textit{no\_above}=0.2, \textit{no\_below}=50 oraz liczby tematów równej 30. Opisano tematy, przy czy dla trzech nie udało się przypisać ogólnego zagadnienia i zostały oznaczone numerami. Przykładowo był to temat nr 4, dla którego kluczowe słowa opisujące to: \textit{(myśleć, wielki, debata, solidarność, program, rada, krajowy, budżet, telewizja, szczególnie}. Niektóre też były dość ogólne dostały więc opisy takie jak \textit{polityka} czy \textit{dyskusja}. Rozkłady tematów dla wybranych polityków znajdują się na rysunku \ref{pic:atm01}.
+
+\begin{figure}
+\includegraphics[scale=0.7]{atm01} 
+\centering \caption{Rozkłady wypowiedzi względem tematów dla wybranych posłów}
+ \label{pic:atm01}
+\end{figure}
+
+Konstrukcja takiego modelu pozwala otrzymać w ten sposób wektor o długości 30 opisujący każdego posła. Można wykorzystać tę informację aby zgrupować posłów względem podobieństwa tematów wystąpień i zweryfikować, czy taki podział koreluje z przypisaniem do partii politycznej.
+Analizę przeprowadzono dla 5 największych partii tj. Akcja Wyborcza Solidarność, Platforma Obywatelska, Polskie Stronnictwo Ludowe, Prawo i Sprawiedliwość oraz Sojusz Lewicy Demokratycznej. Bazując na metodzie k średnich przypisano każdego z posłów do jednego z 5 klastrów zbudowanych w oparciu o wektory tematów z modelu author-topic. Na wykresie \ref{pic:atm02} widać, że rozkład posłów pomiędzy grupami nie jest jednorodny. Wyraźnie dominuje grupa 2. Tabela \ref{tab:atm01} prezentuje spójność oznaczenia grup i partii w wymiarze liczbowym.
+
+\begin{figure}
+\includegraphics[scale=0.5]{atm02} 
+\centering \caption{Rozkład posłów względem klastrów}
+ \label{pic:atm02}
+\end{figure}
+
+\begin{table}[h] \centering
+\begin{tabular}{|c|c|c|c|c|c|} 
+\hline
+Partia / Klaster & 0 & 1 & 2 & 3 & 4  \\ \hline
+Akcja Wyborcza Solidarność	 & 17	 &	0	 &	97	 & 6	 & 4\\ \hline
+Platforma Obywatelska	 & 55	 & 96	 & 97	 & 13	 & 15\\ \hline
+Polskie Stronnictwo Ludowe	 & 23	 & 13	 & 128	 & 30	 & 4\\ \hline
+Prawo i Sprawiedliwość	 & 98	 & 76	 & 111	 & 18	 & 14\\ \hline
+Sojusz Lewicy Demokratycznej	 & 39	 & 11	 & 216	 & 31	 & 14 \\ \hline 
+\end{tabular} \caption{Partia vs wyznaczony klaster} \label{tab:atm01}
+\end{table}
+
+Na rysunku \ref{pic:atm03} zwizualizowano tabelę \ref{tab:atm01} jako punkt odniesienia przybierając zarówno wymiar partii jak i przypisania wynikającego z grupowania. Jeśli chodzi o rozkład partii na klastry, Prawo i Sprawiedliwość wygląda podobnie do Platformy Obywatelskiej posiadając o połowę mniejszy udział grupy 2 niż inne partie. Grupa 0 jest najczęściej realizowana przez posłów Prawa i Sprawiedliwości, grupa 1 przez Platformę Obywatelską, grupa 2 przez SLD, podobnie jak grupa 3 ale tutaj duży udział ma również PSL, grupa 4 ma największy udział PO. 
+
+Podsumowując analizy – widoczne są pewne różnice w udziałach grup, ale na pewno nie można stwierdzić, że klasteryzacja odtworzyła podział posłów wynikający z przypisania do partii. Nie można więc powiedzieć, że tematy poruszane przez największe partie różnią się od siebie istotnie udziałem w wypowiedziach ich członków.
+Zagadnienie zdefiniowane w tym rozdziale zakłada z~góry liczbę grup równą liczbie partii. Zweryfikowano dodatkowo czy ta wartość jest optymalna jako liczba grup, na które dzieli zbiór metoda k-means. Otóż metoda „łokciowa” sugeruje, że rzeczywista liczba podgrup tematycznych wśród posłów wynosi ok. 15 co widać na rysunku \ref{pic:atm04}. 
+
+
+\begin{figure}
+\includegraphics[scale=0.5]{atm03} 
+\centering \caption{Partia vs klaster}
+ \label{pic:atm03}
+\end{figure}
+
+
+\begin{figure}[h]
+\includegraphics[scale=0.7]{atm04} 
+\centering \caption{Wyniki analizy potencjalnej liczby klastrów}
+ \label{pic:atm04}
+\end{figure}
 
 \chapter{Analiza sentymentu}
 
@@ -981,6 +1031,8 @@ sKL(I,j) = \sum_{t=1}^T \left[ \theta_{it} \log \frac{\theta_{it}}{\theta_{jt}} 
 \chapter{Łączenie dotychczasowych wyników}\label{models}
 
 \section{Sentyment vs temat }
+
+\section{Klasteryzacja posłów względem rozkładu tematów w modelu author-topic}
 
 
 %--------------------- 06. BIBLIOGRAFIA ---------------------------------------------------------------------
