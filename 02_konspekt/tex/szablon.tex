@@ -1021,7 +1021,47 @@ Zagadnienie zdefiniowane w tym rozdziale zakłada z~góry liczbę grup równą l
 
 \chapter{Analiza sentymentu}
 
+Kolejnym zagadnieniem z obszaru przetwarzania tekstu jest analiza sentymentu. Pozwala ona określić nastrój danej wypowiedzi np. charakter recenzji (pozytywna/negatywna) lub prześledzić nastrój książki. Temat ten analizowany jest m.in. w \cite{SA}, gdzie autorzy wskazują różnicę pomiędzy klasyfikacją zawartości tekstu pod względem tematycznym a jego sentymentem. Testowane są tam różne metody, które w oparciu o zmienne będące indykatorami sentymentu, konstruują modele klasyfikujące. Słowa powiązane z sentymentem pozytywnym bądź negatywnym zostały wskazane w trakcie badań.
+
+Mając zbiór treningowy, do którego posiadamy oznaczenie sentymentu poszczególnych elementów, możemy wytrenować zmienne, które najlepiej pozwalają go przewidzieć na nowych danych. W przypadku zbioru wystąpień sejmowych nie istnieją takie etykiety. Należy więc zastosować inną metodę określenia sentymentu. 
+
 \section{Przypisanie sentymentu podstawowym słowom}
+W pierwszym kroku wykorzystano listę polskich słów dostępną na stronie Pracowni Obrazowania Mózgu w Instytucie Biologii Doświadczalnej im. M. Nenckiego Polskiej Akademii Nauk (\url{https://exp.lobi.nencki.gov.pl/nawl-analysis}). Lista zawiera ok. 2900 słów wraz z przypisaniem parametrów bliskości do grup: szczęście, złość, smutek, strach, odraza, neutralne. Fragment zbioru prezentuje rysunek \ref{pic:nawl02}. 
+\begin{figure}[h]
+\includegraphics[scale=0.7]{NAWL02} 
+\centering \caption{Fragmnet zbioru z przypisanym sentymentem}
+ \label{pic:nawl02}
+\end{figure}
+
+Kategoria jest przypisywana, gdy słowo jest jej dostatecznie bliskie jednej z grup i jednocześnie dalekie od innych kategorii. Aby uzyskać przypisanie do jednej pierwszych pięciu kategorii dla jak największej liczby słów, zmodyfikowano parametry graniczne zgodnie z rysunkiem \ref{pic:nawl01} a wszystkim niesklasyfikowanym słowom przypisano kategorię im najbliższą. 
+
+\begin{figure}[h]
+\includegraphics[scale=0.7]{NAWL01} 
+\centering \caption{Zastosowane parametry do przypisywania grup}
+\label{pic:nawl01}
+\end{figure}
+
+
+\begin{table}[h] \centering
+\begin{tabular}{|c|c|}
+\hline
+A & 322\\ \hline
+D & 149\\ \hline
+F & 465\\ \hline
+H & 1740\\ \hline
+S & 226\\ \hline
+\end{tabular} \caption{Liczność grup z określonym sentymentem} \label{tab:nawl01}
+\end{table}
+Liczności poszczególnych kategorii po tych modyfikacjach przedstawione są w tabeli \ref{tab:nawl01}.
+
+
+
+
+
+
+
+
+
 
 \section{Przypisanie sentymentu pozostałym słowom}
 
@@ -1050,6 +1090,8 @@ Zagadnienie zdefiniowane w tym rozdziale zakłada z~góry liczbę grup równą l
 \bibitem{RTL} Chang, Jonathan and Sean Gerrish and Wang, Chong and Jordan L. Boyd-graber and David M. Blei, \textit{Reading Tea Leaves: How Humans Interpret Topic Models}, Advances in Neural Information Processing Systems 22, 2009, 288-296
 \bibitem{ATM} Michal Rosen-Zvi and Thomas Griffiths and Mark Steyvers and Padhraic Smyth, \textit{The Author-Topic Model for Authors and Documents}, arXiv:1207.4169v1
 \bibitem{SA} Bo Pang and Lillian Lee and Shivakumar Vaithyanathan, \textit{Thumbs Up? Sentiment Classification Using Machine Learning Techniques}, 2002 Proceedings of EMNLP 79-86
+\bibitem{TM} T. Mikolov; et al. \textit{Efficient Estimation of Word Representations in Vector Space}, 2012	arXiv:1301.3781
+\bibitem{TM2} E. Grave, P. Bojanowski, P. Gupta, A. Joulin, T. Mikolov \textit{Learning Word Vectors for 157 Languages}, 2018 arXiv:1802.06893
 \end{thebibliography}
 
 \thispagestyle{empty}
