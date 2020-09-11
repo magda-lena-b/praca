@@ -1025,7 +1025,7 @@ Kolejnym zagadnieniem z obszaru przetwarzania tekstu jest analiza sentymentu. Po
 
 Mając zbiór treningowy, do którego posiadamy oznaczenie sentymentu poszczególnych elementów, możemy wytrenować zmienne, które najlepiej pozwalają go przewidzieć na nowych danych. W przypadku zbioru wystąpień sejmowych nie istnieją takie etykiety. Należy więc zastosować inną metodę określenia sentymentu. 
 
-\section{Przypisanie sentymentu podstawowym słowom}
+\section{Przypisanie sentymentu słowom z korpusu}
 W pierwszym kroku wykorzystano listę polskich słów dostępną na stronie Pracowni Obrazowania Mózgu w Instytucie Biologii Doświadczalnej im. M. Nenckiego Polskiej Akademii Nauk (\url{https://exp.lobi.nencki.gov.pl/nawl-analysis}). Lista zawiera ok. 2900 słów wraz z przypisaniem parametrów bliskości do grup: szczęście, złość, smutek, strach, odraza, neutralne. Fragment zbioru prezentuje rysunek \ref{pic:nawl02}. 
 \begin{figure}[h]
 \includegraphics[scale=0.7]{NAWL02} 
@@ -1033,7 +1033,9 @@ W pierwszym kroku wykorzystano listę polskich słów dostępną na stronie Prac
  \label{pic:nawl02}
 \end{figure}
 
-Kategoria jest przypisywana, gdy słowo jest jej dostatecznie bliskie jednej z grup i jednocześnie dalekie od innych kategorii. Aby uzyskać przypisanie do jednej pierwszych pięciu kategorii dla jak największej liczby słów, zmodyfikowano parametry graniczne zgodnie z rysunkiem \ref{pic:nawl01} a wszystkim niesklasyfikowanym słowom przypisano kategorię im najbliższą. 
+Kategoria jest przypisywana, gdy słowo jest jej dostatecznie bliskie jednej z grup i jednocześnie dalekie od innych kategorii.
+
+W pierwszym podejściu, aby uzyskać przypisanie do jednej pierwszych pięciu kategorii dla jak największej liczby słów, zmodyfikowano parametry graniczne zgodnie z rysunkiem \ref{pic:nawl01} a wszystkim niesklasyfikowanym słowom przypisano kategorię im najbliższą. 
 
 \begin{figure}[h]
 \includegraphics[scale=0.7]{NAWL01} 
@@ -1041,18 +1043,43 @@ Kategoria jest przypisywana, gdy słowo jest jej dostatecznie bliskie jednej z g
 \label{pic:nawl01}
 \end{figure}
 
+Następnie przypisano kategorię dla wszystkich słów ze słownika, utworzonego w oparciu o cały korpus. Aby wykonać takie przypisanie, należało w jakiś sposób określić podobieństwo pomiędzy słowami. Wykorzystano do tego embeddingi czyli reprezentację wektorową słów z korpusu. Word2vec czyli metoda opisywania słów jako wektorów została opisana w \cite{TM}. Bazuje ona na założeniu, że znaczenie słów można odkryć za pomocą kontekstu, w jakim się znajdują w tekście. Dwa typy modeli stosowanych do trenowania embeddingów to: 
+\begin{itemize}
+\item \textit{continuous bag of words} CBOW opisany w \cite{CBOW} opiera się na treningu sieci neuronowej, która na podstawie otaczających słów próbuje przewidzieć dane słowo
+\item \textit{skipgram} \cite{SKIPG} polega na przewidywaniu otaczających słów w oparciu o słowo bazowe.
+\end{itemize}
+W \cite{TM2} opisano sposób wytrenowania modeli na danych z Wikipedii oraz projektu Common Crawl dla 157 języków. Modele są dostępne w pakiecie pythonowym \textit{fastText}. 
+Wszystkim słowom z korpusu oraz bazy NAWL przypisano ich reprezentacje wektorowe. Sentyment słowa określano na podstawie pięciu najbliższych (wg odległości cosinusowej) spełniających warunek na odległość mniejszą niż 0.8. Dla nich obliczano średnią odległość do każdej kategorii i następnie wybierano najbliższą i przypisywano do słowa. Pozwoliło to przypisać sentyment dla 152 021 z 152 498 słów.
+
+
+\section{Analiza kategorii}
+Wstępna analiza wydzielonych kategorii wykazała jednak, że tak proste założenia nie pozwalają uzyskać grup, które byłyby wewnętrznie spójne i jednocześnie istnie odróżniały się od innych. Wprowadzono zatem następujące korekty do algorytmu:
+\begin{itemize}
+\item maksymalna odległość słowa od kategorii jest nie większa niż 6.2,
+\item odległość do ‘drugiej najbliższej’ grupy musi być większą o co najmniej 0.5 od odległości od grupy najbliższej,
+\item odległość słów najbliższych, na podstawie których określany jest sentyment nowego słowa jest nie większa niż 0.7,
+\item wykluczenie z dalszych analiz słów o liczniku występowania mniejszym niż 10.
+\end{itemize}
+Te modyfikacje pozwoliły otrzymać kategorie o licznościach przedstawionych w tabeli \ref{tab:kat}.
 
 \begin{table}[h] \centering
-\begin{tabular}{|c|c|}
+\begin{tabular}{|c|c|} 
 \hline
-A & 322\\ \hline
-D & 149\\ \hline
-F & 465\\ \hline
-H & 1740\\ \hline
-S & 226\\ \hline
-\end{tabular} \caption{Liczność grup z określonym sentymentem} \label{tab:nawl01}
+grupa & liczność\\ \hline
+A & 884\\ \hline
+D & 280 \\ \hline
+F & 1141 \\ \hline
+H & 28872\\ \hline
+S & 310 \\ \hline 
+\end{tabular} \caption{Kategorie sentymentu słów w korpusie} \label{tab:kat}
 \end{table}
-Liczności poszczególnych kategorii po tych modyfikacjach przedstawione są w tabeli \ref{tab:nawl01}.
+
+Zwizualizowano podział na grupy z wykluczeniem dominującej klasy \textit{happiness} za pomocą metody PCA. Wyniki przedstawione na rysunku \ref{pic:PCA01} potwierdzają dobrą jakość podziału na kategorie.
+\begin{figure}[h]
+\includegraphics[scale=0.5]{PCA01} 
+\centering \caption{PCA dla kategorii sentymentu}
+\label{pic:PCA01}
+\end{figure}
 
 
 
@@ -1061,9 +1088,6 @@ Liczności poszczególnych kategorii po tych modyfikacjach przedstawione są w t
 
 
 
-
-
-\section{Przypisanie sentymentu pozostałym słowom}
 
 \section{Sentyment wypowiedzi w czasie oraz w zależności od mówcy i tematu}
 
@@ -1092,6 +1116,10 @@ Liczności poszczególnych kategorii po tych modyfikacjach przedstawione są w t
 \bibitem{SA} Bo Pang and Lillian Lee and Shivakumar Vaithyanathan, \textit{Thumbs Up? Sentiment Classification Using Machine Learning Techniques}, 2002 Proceedings of EMNLP 79-86
 \bibitem{TM} T. Mikolov; et al. \textit{Efficient Estimation of Word Representations in Vector Space}, 2012	arXiv:1301.3781
 \bibitem{TM2} E. Grave, P. Bojanowski, P. Gupta, A. Joulin, T. Mikolov \textit{Learning Word Vectors for 157 Languages}, 2018 arXiv:1802.06893
+\bibitem{CBOW} T. Mikolov, I. Sutskever, K. Chen, G.S. Corrado, J. Dean \textit{Distributed representations of words and phrases and their compositionality}, 2013 arXiv:1310.4546
+\bibitem{SKIPG} P. Bojanowski, E. Grave, A. Joulin, T. Mikolov \textit{Enriching word vectors with subword information}, 2017 Transactions of the Association for Computational Linguistics, 5.
+
+
 \end{thebibliography}
 
 \thispagestyle{empty}
